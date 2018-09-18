@@ -7,12 +7,12 @@
 #include <unistd.h>
 #include <assert.h>
 
-const int PORT = 7001;
+const int PORT = 7000;
 
 const int BUFFER_SIZE = 10;
 
 void readn(int s, char *buf, int n) {
-    int m = 0;
+    size_t m = 0;
     while (m < n) {
         m += recv(s, buf + m, n - m, 0);
     }
@@ -23,7 +23,8 @@ int main(void) {
     int s;
     int s1;
     int rc;
-    char buf[BUFFER_SIZE];
+    char buf[BUFFER_SIZE + 1];
+    buf[BUFFER_SIZE] = '\0';
 
     local.sin_family = AF_INET;
     local.sin_port = htons(PORT);
@@ -50,9 +51,9 @@ int main(void) {
     }
 
 //    rc = recv(s1, buf, BUFFER_SIZE, 0);
-    while (1) {
+    while (buf[0] != 'q') {
         readn(s1, buf, BUFFER_SIZE);
-        printf("server recv: %s\n", buf);
+        printf("server recv: <%s>\n", buf);
         rc = send(s1, buf, BUFFER_SIZE, 0);
     }
 
@@ -63,6 +64,7 @@ int main(void) {
 
     shutdown(s1, SHUT_RDWR);
     close(s1);
+
     shutdown(rc, SHUT_RDWR);
     close(rc);
 
