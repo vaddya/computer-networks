@@ -2,9 +2,9 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <unistd.h>
 
 const int PORT = 7001;
@@ -12,15 +12,15 @@ const int PORT = 7001;
 const int BUFFER_SIZE = 255;
 
 int main(int argc, char **argv) {
-    struct sockaddr_in peer;
+    struct sockaddr_in peer{};
     int s;
     int rc;
     char recvBuf[BUFFER_SIZE];
-    char *sendBuf;
+    char const *sendBuf;
 
     peer.sin_family = AF_INET;
     peer.sin_port = htons(PORT);
-    peer.sin_addr.s_addr = inet_addr("127.0.0.1");
+    peer.sin_addr.s_addr = htonl(INADDR_LOOPBACK); // inet_addr("127.0.0.1");
 
     if (argc > 1) {
         sendBuf = argv[1];
