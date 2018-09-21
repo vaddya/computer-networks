@@ -9,12 +9,13 @@
 #include <iostream>
 #include <vector>
 
-const int PORT = 7001;
+const int PORT = 7000;
 
 const int BUFFER_SIZE = 10;
 
 struct Client {
     int socket;
+    pthread_t *thread_id;
 };
 
 std::vector<Client> clients;
@@ -24,15 +25,27 @@ std::vector<Client> clients;
  * @return the number read, if an error occurred returns m < n
  */
 int readn(int s, char *buf, int n) {
-    int rc, m = 0;
+    int m = 0;
+    ssize_t rc;
     while (m < n) {
         rc = recv(s, buf + m, n - m, MSG_NOSIGNAL);
         if (rc < 0) {
-            break;
+            return -1;
         }
         m += rc;
     }
     return m;
+}
+
+/**
+ * Shut down client's socket & wait for client's thread termination
+ * @param c - client
+ */
+void kill_client(Client c) {
+    std::cout << "Killing client with socket: " << c.socket << std::endl;
+    shutdown(c.socket, SHUT_RDWR);
+    close(c.socket);
+    pthread_join(*c.thread_id, nullptr);
 }
 
 /**
@@ -45,14 +58,14 @@ void *client_thread(void *data) {
     buf[BUFFER_SIZE] = '\0';
     while (true) {
         int read = readn(cs, buf, BUFFER_SIZE);
-        if (read < BUFFER_SIZE) {
-            std::cout << "Cannot read in cs=" << cs << std::endl;
+        if (read < 0) {
+            std::cout << "Cannot read from socket: " << cs << std::endl;
             break;
         }
         std::cout << "Receive: " << buf << std::endl;
         ssize_t rc = send(cs, buf, BUFFER_SIZE, MSG_NOSIGNAL);
         if (rc < 0) {
-            std::cout << "Send error in cs=" << cs << std::endl;
+            std::cout << "Sending error to socket: " << cs << std::endl;
         }
     }
 }
@@ -66,22 +79,21 @@ void *accept_thread(void *data) {
     int cs;
     while (true) {
         cs = accept(ss, nullptr, nullptr);
-        int *csp = new int;
+        auto csp = new int;
         *csp = cs;
         if (cs < 0) {
             std::cout << "Cannot accept connection" << std::endl;
             break;
         }
-        pthread_t thread_id;
-        pthread_create(&thread_id, nullptr, &client_thread, (void *) csp);
-        clients.push_back({cs});
+        auto thread_id = new pthread_t;
+        pthread_create(thread_id, nullptr, &client_thread, (void *) csp);
+        clients.push_back({cs, thread_id});
     }
+    std::cout << "Stop accepting connections" << std::endl;
     for (Client c : clients) {
-        std::cout << "Shutting down client socket: " << c.socket << std::endl;
-        shutdown(c.socket, SHUT_RDWR);
-        close(c.socket);
+        kill_client(c);
     }
-    std::cout << "Stop accepting " << std::endl;
+    clients.clear();
 }
 
 int main(int argc, char **argv) {
@@ -93,6 +105,8 @@ int main(int argc, char **argv) {
     local.sin_port = htons(PORT);
     local.sin_addr.s_addr = htonl(INADDR_ANY);
     ss = socket(AF_INET, SOCK_STREAM, 0);
+    int enable = 1;
+    setsockopt(ss, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int));
     if (ss < 0) {
         perror("socket call failed");
         exit(1);
@@ -108,7 +122,7 @@ int main(int argc, char **argv) {
         exit(1);
     }
 
-    int *ssp = new int;
+    auto ssp = new int;
     *ssp = ss;
     pthread_t accept_thread_id;
     pthread_create(&accept_thread_id, nullptr, &accept_thread, (void *) ssp);
@@ -123,7 +137,10 @@ int main(int argc, char **argv) {
         } else if (command == "kill") { // отключить i-ого клииента
             int i;
             std::cin >> i;
-            // TODO: kill i-th
+            if (i < clients.size()) {
+                kill_client(clients[i]);
+                clients.erase(clients.begin() + i);
+            }
         } else if (command == "exit") { // выход
             shutdown(ss, SHUT_RDWR);
             close(ss);
@@ -131,9 +148,9 @@ int main(int argc, char **argv) {
             break;
         } else {
             std::cout << "Supported commands: " << std::endl
-                      << "$ list" << std::endl
-                      << "$ kill x" << std::endl
-                      << "$ exit" << std::endl;
+                      << " - list" << std::endl
+                      << " - kill x" << std::endl
+                      << " - exit" << std::endl;
         }
     }
     exit(0);
