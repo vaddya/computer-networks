@@ -20,6 +20,8 @@ struct Client {
 
 std::vector<Client> clients;
 
+pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 /**
  * Read {n} bytes from socket {s} into {buff}
  * @return the number read, if an error occurred returns m < n
@@ -41,11 +43,13 @@ int readn(int s, char *buf, int n) {
  * Shut down client's socket & wait for client's thread termination
  * @param c - client
  */
-void kill_client(Client c) {
+void kill_client(Client &c) {
     std::cout << "Killing client with socket: " << c.socket << std::endl;
     shutdown(c.socket, SHUT_RDWR);
     close(c.socket);
     pthread_join(*c.thread_id, nullptr);
+    delete c.thread_id;
+    c.thread_id = nullptr;
 }
 
 /**
@@ -53,7 +57,8 @@ void kill_client(Client c) {
  * @param data - client socket
  */
 void *client_thread(void *data) {
-    int cs = *reinterpret_cast<int *>(data);
+    auto csp = reinterpret_cast<int *>(data);
+    int cs = *csp;
     char buf[BUFFER_SIZE + 1];
     buf[BUFFER_SIZE] = '\0';
     while (true) {
@@ -62,12 +67,13 @@ void *client_thread(void *data) {
             std::cout << "Cannot read from socket: " << cs << std::endl;
             break;
         }
-        std::cout << "Receive: " << buf << std::endl;
+        std::cout << "Receive from socket " << cs << ": " << buf << std::endl;
         ssize_t rc = send(cs, buf, BUFFER_SIZE, MSG_NOSIGNAL);
         if (rc < 0) {
             std::cout << "Sending error to socket: " << cs << std::endl;
         }
     }
+    delete csp;
 }
 
 /**
@@ -75,8 +81,10 @@ void *client_thread(void *data) {
  * @param data - server socket
  */
 void *accept_thread(void *data) {
-    int ss = *reinterpret_cast<int *>(data);
+    auto ssp = reinterpret_cast<int *>(data);
+    int ss = *ssp;
     int cs;
+    pthread_mutex_init(&clients_mutex, nullptr);
     while (true) {
         cs = accept(ss, nullptr, nullptr);
         auto csp = new int;
@@ -87,13 +95,20 @@ void *accept_thread(void *data) {
         }
         auto thread_id = new pthread_t;
         pthread_create(thread_id, nullptr, &client_thread, (void *) csp);
+        pthread_mutex_lock(&clients_mutex);
         clients.push_back({cs, thread_id});
+        pthread_mutex_unlock(&clients_mutex);
+        std::cout << "Joined client with socket " << cs << std::endl;
     }
     std::cout << "Stop accepting connections" << std::endl;
+    pthread_mutex_lock(&clients_mutex);
     for (Client c : clients) {
         kill_client(c);
     }
     clients.clear();
+    pthread_mutex_unlock(&clients_mutex);
+    pthread_mutex_destroy(&clients_mutex);
+    delete ssp;
 }
 
 int main(int argc, char **argv) {
@@ -131,15 +146,22 @@ int main(int argc, char **argv) {
     while (true) {
         std::cin >> command;
         if (command == "list") { // список подключенных клиентов
+            pthread_mutex_lock(&clients_mutex);
+            std::cout << "Total " << clients.size() << " clients" << std::endl;
             for (int i = 0; i < clients.size(); i++) {
                 std::cout << i << ": socket id=" << clients[i].socket << std::endl;
             }
+            pthread_mutex_unlock(&clients_mutex);
         } else if (command == "kill") { // отключить i-ого клииента
             int i;
             std::cin >> i;
-            if (i < clients.size()) {
+            if (i >= 0 && i < clients.size()) {
+                pthread_mutex_lock(&clients_mutex);
                 kill_client(clients[i]);
                 clients.erase(clients.begin() + i);
+                pthread_mutex_unlock(&clients_mutex);
+            } else {
+                std::cout << "Wrong client index" << std::endl;
             }
         } else if (command == "exit") { // выход
             shutdown(ss, SHUT_RDWR);
