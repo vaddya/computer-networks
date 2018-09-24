@@ -5,8 +5,9 @@ project(SimpleClientServer)
 set(CMAKE_CXX_STANDARD 11)
 
 add_subdirectory(client)
-
 add_subdirectory(server)
+add_subdirectory(server_select)
+add_subdirectory(utils)
 
 add_custom_target(SimpleClientServer)
 
