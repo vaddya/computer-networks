@@ -16,7 +16,7 @@ const int PORT = 7000;
 const int BUFFER_SIZE = 10;
 
 struct Client {
-    int socket;
+    int *socket;
     pthread_t *thread_id;
 };
 
