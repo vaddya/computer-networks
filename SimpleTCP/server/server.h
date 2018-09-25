@@ -34,7 +34,7 @@ pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
  * Shut down client's socket & wait for client's thread termination
  * @param c - client
  */
-void kill_client(Client &c);
+void kill_and_join_client(Client &c);
 
 /**
  * Client thread

@@ -24,6 +24,8 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    pthread_mutex_init(&clients_mutex, nullptr);
+
     auto ssp = new int;
     *ssp = ss;
     pthread_t accept_thread_id;
@@ -44,7 +46,7 @@ int main(int argc, char **argv) {
             std::cin >> i;
             if (i >= 0 && i < clients.size()) {
                 pthread_mutex_lock(&clients_mutex);
-                kill_client(clients[i]);
+                kill_and_join_client(clients[i]);
                 clients.erase(clients.begin() + i);
                 pthread_mutex_unlock(&clients_mutex);
             } else {
@@ -65,7 +67,7 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-void kill_client(Client &c) {
+void kill_and_join_client(Client &c) {
     std::cout << "Killing client with socket: " << c.socket << std::endl;
     shutdown(c.socket, SHUT_RDWR);
     close(c.socket);
@@ -98,7 +100,6 @@ void *accept_thread(void *data) {
     auto ssp = reinterpret_cast<int *>(data);
     int ss = *ssp;
     int cs;
-    pthread_mutex_init(&clients_mutex, nullptr);
     while (true) {
         cs = accept(ss, nullptr, nullptr);
         auto csp = new int;
@@ -117,7 +118,7 @@ void *accept_thread(void *data) {
     std::cout << "Stop accepting connections" << std::endl;
     pthread_mutex_lock(&clients_mutex);
     for (Client c : clients) {
-        kill_client(c);
+        kill_and_join_client(c);
     }
     clients.clear();
     pthread_mutex_unlock(&clients_mutex);
