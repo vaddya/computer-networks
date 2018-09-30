@@ -1,7 +1,7 @@
 #include "readn.h"
 
-int readn(int s, char *buf, int n) {
-    int m = 0;
+ssize_t readn(int s, char *buf, size_t n) {
+    ssize_t m = 0;
     ssize_t rc;
     while (m < n) {
         rc = recv(s, buf + m, n - m, MSG_NOSIGNAL);

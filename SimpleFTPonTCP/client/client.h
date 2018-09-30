@@ -13,12 +13,13 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <socket_io.h>
+#include "readn.h"
 #include "request.h"
 #include "response.h"
 
 const int PORT = 7000;
 
-const int BUFFER_SIZE = 255;
 
 class Client {
 
@@ -32,12 +33,12 @@ public:
      * @param server_addr
      * @param port
      */
-    void conn(std::string server_addr, int port);
+    void connect(const std::string &server_addr, int port);
 
     /**
      * Disconnects from current server
      */
-    void disconn();
+    void disconnect();
 
     /**
      * List files and folders in current directory
@@ -49,31 +50,26 @@ public:
      * Change current directory
      * @param path
      */
-    void cd(std::string path);
+    void cd(const std::string &string);
 
     /**
      * Download file from server
      * @param file_name
      * @param dst
      */
-    void get(std::string file_name, std::ofstream dst);
+    void get(const std::string &file_name);
 
     /**
      * Upload file to server
      * @param file_name
      * @param src
      */
-    void put(std::string file_name, std::ifstream src);
+    void put(const std::string &file_name);
 
 private:
     int *s;
 
-    char *buffer;
-
-    void sendCommand(Request request) {
-        buffer[0] = request;
-        send(*this->s, buffer, sizeof buffer[0], nullptr);
-    }
+    SocketIO *io;
 };
 
 #endif //SIMPLECLIENTSERVER_CLIENT_H

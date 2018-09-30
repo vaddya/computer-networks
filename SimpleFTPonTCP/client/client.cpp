@@ -2,19 +2,18 @@
 
 Client::Client() {
     s = nullptr;
-    buffer = new char[BUFFER_SIZE];
 }
 
 Client::~Client() {
-    disconn();
-    delete(buffer);
+    disconnect();
 }
 
-void Client::conn(std::string server_addr, int port) {
+void Client::connect(const std::string &server_addr, int port) {
+    disconnect();
     sockaddr_in peer{};
     peer.sin_family = AF_INET;
-    peer.sin_port = htons(port);
-    if (server_addr != nullptr) {
+    peer.sin_port = htons(static_cast<uint16_t>(port));
+    if (server_addr != "localhost") {
         peer.sin_addr.s_addr = inet_addr(server_addr.c_str());
     } else {
         peer.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
@@ -24,43 +23,67 @@ void Client::conn(std::string server_addr, int port) {
         throw std::runtime_error("socket call failed");
     }
 
-    if (connect(*s, (struct sockaddr *) &peer, sizeof(peer))) {
-        throw std::runtime_error("connect call failed");
+    if (::connect(*s, (struct sockaddr *) &peer, sizeof(peer))) {
+        throw std::runtime_error("Connecting failed");
     }
+
+    io = new SocketIO(s);
 }
 
-void Client::disconn() {
+void Client::disconnect() {
     if (s) {
         shutdown(*s, SHUT_RDWR);
         close(*s);
+        delete io;
+        io = nullptr;
         delete s;
         s = nullptr;
     }
 }
 
 std::vector<std::string> Client::ls() {
-    return std::vector<std::string>();
+    io->sendRequest(Request::LS);
+    auto response = io->getResponse();
+    if (response != Response::OK) {
+        throw std::runtime_error("LS failed");
+    }
+    size_t size = io->getDataSize();
+    std::vector<std::string> names(size);
+    for (auto i = 0; i < size; i++) {
+        names[i] = io->getString();
+    }
+    return names;
 }
 
-void Client::cd(std::string path) {
-
+void Client::cd(const std::string &path) {
+    io->sendRequest(Request::CD);
+    io->sendString(path);
 }
 
-void Client::get(std::string file_name, std::ofstream dst) {
+void Client::get(const std::string &file_name) {
+    io->sendRequest(Request::GET);
+    io->sendString(file_name);
 
-}
-
-void Client::put(std::string file_name, std::ifstream src) {
-    int rc = send(s, sendBuf, strlen(sendBuf), 0);
-    if (rc <= 0) {
-        perror("send call failed");
+    auto response = io->getResponse();
+    if (response != Response::OK) {
+        throw std::runtime_error("Get failed: " + response);
     }
 
-    rc = recv(s, recvBuf, BUFFER_SIZE, 0);
-    if (rc <= 0)
-        perror("recv call failed");
-    else
-        printf("client recv: %s\n", recvBuf);
+    std::ofstream file(file_name);
+    io->getFile(file);
+}
+
+void Client::put(const std::string &file_name) {
+    io->sendRequest(Request::PUT);
+    io->sendString(file_name);
+
+    std::ifstream file(file_name);
+    io->sendFile(file);
+
+    auto response = io->getResponse();
+    if (response != Response::OK) {
+        throw std::runtime_error("Put failed: " + response);
+    }
 }
 
 int main(int argc, char **argv) {
@@ -74,7 +97,7 @@ int main(int argc, char **argv) {
             std::cin >> host;
             int port;
             std::cin >> port;
-            client.conn(host, port);
+            client.connect(host, port);
         } else if (command == "ls") {
             for (const auto &file : client.ls()) {
                 std::cout << file << std::endl;
@@ -84,11 +107,15 @@ int main(int argc, char **argv) {
             std::cin >> path;
             client.cd(path);
         } else if (command == "get") {
-
+            std::string file_name;
+            std::cin >> file_name;
+            client.get(file_name);
         } else if (command == "put") {
-
+            std::string file_name;
+            std::cin >> file_name;
+            client.put(file_name);
         } else if (command == "disconnect") {
-
+            client.disconnect();
         } else {
             std::cout << "Supported commands: " << std::endl
                       << " - connect" << std::endl
