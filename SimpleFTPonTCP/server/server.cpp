@@ -1,121 +1,90 @@
 #include "server.h"
 
-int main(int argc, char **argv) {
-    struct sockaddr_in local{};
-    local.sin_family = AF_INET;
-    local.sin_port = htons(PORT);
-    local.sin_addr.s_addr = htonl(INADDR_ANY);
-
-    auto ss = new int;
-    *ss = socket(AF_INET, SOCK_STREAM, 0);
-    if (*ss < 0) {
-        perror("socket call failed");
-        return 1;
-    }
-    int enable = 1;
-    setsockopt(*ss, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int));
-    int rc = bind(*ss, (struct sockaddr *) &local, sizeof(local));
-    if (rc < 0) {
-        perror("bind call failure");
-        return 1;
-    }
-    rc = listen(*ss, 5);
-    if (rc) {
-        perror("listen call failed");
-        return 1;
-    }
-
-    pthread_mutex_init(&clients_mutex, nullptr);
-
-    pthread_t accept_thread_id;
-    pthread_create(&accept_thread_id, nullptr, &accept_thread, (void *) ss);
-
-    std::string command;
-    std::cin >> command;
-    while (command != "exit") {
-        if (command == "list") {
-            pthread_mutex_lock(&clients_mutex);
-            std::cout << "Total " << clients.size() << " clients" << std::endl;
-            for (int i = 0; i < clients.size(); i++) {
-                std::cout << i << ": socket id=" << clients[i].socket << std::endl;
-            }
-            pthread_mutex_unlock(&clients_mutex);
-        } else if (command == "kill") {
-            int i;
-            std::cin >> i;
-            if (i >= 0 && i < clients.size()) {
-                pthread_mutex_lock(&clients_mutex);
-                kill_and_join_client(clients[i]);
-                clients.erase(clients.begin() + i);
-                pthread_mutex_unlock(&clients_mutex);
-            } else {
-                std::cout << "Wrong client index" << std::endl;
-            }
-        } else {
-            std::cout << "Supported commands: " << std::endl
-                      << " - list" << std::endl
-                      << " - kill x" << std::endl
-                      << " - exit" << std::endl;
-        }
-        std::cin >> command;
-    }
-    shutdown(*ss, SHUT_RDWR);
-    close(*ss);
-    pthread_join(accept_thread_id, nullptr);
-    return 0;
+Server::Server(int *socket, pthread_t *thread) {
+    socket_id = socket;
+    thread_id = thread;
+    path = std::string(SERVER_PATH);
+    io = new SocketIO(socket_id);
 }
 
-void kill_and_join_client(Client &c) {
-    std::cout << "Killing client with socket: " << c.socket << std::endl;
-    shutdown(*c.socket, SHUT_RDWR);
-    close(*c.socket);
-    pthread_join(*c.thread_id, nullptr);
-    delete c.socket;
-    c.socket = nullptr;
-    delete c.thread_id;
-    c.thread_id = nullptr;
+Server::~Server() {
+    delete socket_id;
+    delete thread_id;
+    delete io;
 }
 
-void *client_thread(void *data) {
-    auto cs = reinterpret_cast<int *>(data);
-    char buf[BUFFER_SIZE + 1];
-    buf[BUFFER_SIZE] = '\0';
+void Server::processRequests() {
     while (true) {
-        int read = readn(*cs, buf, BUFFER_SIZE);
-        if (read < 0) {
-            std::cout << "Cannot read from socket: " << *cs << std::endl;
-            break;
-        }
-        std::cout << "Receive from socket " << *cs << ": " << buf << std::endl;
-        ssize_t rc = send(*cs, buf, BUFFER_SIZE, MSG_NOSIGNAL);
-        if (rc < 0) {
-            std::cout << "Sending error to socket: " << *cs << std::endl;
+        auto request = io->getRequest();
+        std::cout << "Got request " << request << " from socket " << *socket_id << std::endl;
+        switch (request) {
+            case Request::PWD:
+                pwd();
+                break;
+            case Request::LS:
+                ls();
+                break;
+            case Request::CD:
+                cd();
+                break;
+            case Request::GET:
+                get();
+                break;
+            case Request::PUT:
+                put();
+                break;
+            default:
+                std::cout << "Unknown request: " << request << std::endl;
+                return;
         }
     }
 }
 
-void *accept_thread(void *data) {
-    auto ss = reinterpret_cast<int *>(data);
-    while (true) {
-        auto cs = new int;
-        *cs = accept(*ss, nullptr, nullptr);
-        if (*cs < 0) {
-            std::cout << "Cannot accept connection" << std::endl;
-            break;
-        }
-        auto thread_id = new pthread_t;
-        pthread_create(thread_id, nullptr, &client_thread, (void *) cs);
-        pthread_mutex_lock(&clients_mutex);
-        clients.push_back({cs, thread_id});
-        pthread_mutex_unlock(&clients_mutex);
-        std::cout << "Joined client with socket " << *cs << std::endl;
+void Server::kill_and_join() {
+    std::cout << "Killing client with socket: " << *socket_id << std::endl;
+    shutdown(*socket_id, SHUT_RDWR);
+    close(*socket_id);
+    pthread_join(*thread_id, nullptr);
+}
+
+void Server::pwd() {
+    io->sendResponse(Response::OK);
+    io->sendString(path.c_str());
+}
+
+void Server::ls() {
+    io->sendResponse(Response::OK);
+    size_t size = static_cast<size_t>(std::distance(
+            fs::directory_iterator(path), fs::directory_iterator())
+    );
+    io->sendDataSize(size);
+    for (auto &p : fs::directory_iterator(path)) {
+        io->sendBool(fs::is_directory(p.path()));
+        std::string str = p.path().string();
+        io->sendString(str);
     }
-    std::cout << "Stop accepting connections" << std::endl;
-    pthread_mutex_lock(&clients_mutex);
-    for (Client c : clients) {
-        kill_and_join_client(c);
+}
+
+void Server::cd() {
+    fs::path attempt = path / io->getString();
+    if (!fs::exists(attempt)) {
+        io->sendResponse(Response::CD_NOT_EXIST);
+    } else if (!fs::is_directory(attempt)) {
+        io->sendResponse(Response::CD_NOT_DIRECTORY);
+    } else {
+        path = fs::canonical(attempt);
+        io->sendResponse(Response::OK);
     }
-    clients.clear();
-    pthread_mutex_unlock(&clients_mutex);
-    pthread_mutex_destroy(&clients_mutex);
+}
+
+void Server::get() {
+
+}
+
+void Server::put() {
+
+}
+
+std::string Server::to_string() {
+    return std::string("[") + std::to_string(*socket_id) + ", " + std::to_string(*thread_id) + "]";
 }

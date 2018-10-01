@@ -1,51 +1,50 @@
-#ifndef SIMPLECLIENTSERVER_SERVER_H
-#define SIMPLECLIENTSERVER_SERVER_H
+#ifndef SIMPLEFTPONTCP_SERVER_H
+#define SIMPLEFTPONTCP_SERVER_H
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <pthread.h>
 #include <unistd.h>
 #include <string>
-#include <iostream>
 #include <vector>
-#include "readn.h"
+#include <experimental/filesystem>
+#include "response.h"
+#include "socket_io.h"
 
-const int PORT = 7000;
+const std::string SERVER_PATH = "/home/vaddya/Test";
 
-const int BUFFER_SIZE = 10;
+namespace fs = std::experimental::filesystem;
 
-struct Client {
-    int *socket;
+class Server {
+
+public:
+    Server(int *socket, pthread_t *thread);
+
+    ~Server();
+
+    void processRequests();
+
+    void kill_and_join();
+
+    void pwd();
+
+    void ls();
+
+    void cd();
+
+    void get();
+
+    void put();
+
+    std::string to_string();
+
+private:
+    fs::path path;
+
+    int *socket_id;
+
     pthread_t *thread_id;
+
+    SocketIO *io;
 };
 
-/**
- * Global vector of clients
- */
-std::vector<Client> clients;
 
-/**
- * Global mutex to safe access vector of clients
- */
-pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
-
-/**
- * Shut down client's socket & wait for client's thread termination
- * @param c - client
- */
-void kill_and_join_client(Client &c);
-
-/**
- * Client thread
- * @param data - client socket
- */
-void *client_thread(void *data);
-
-/**
- * Thread to accept connections
- * @param data - server socket
- */
-void *accept_thread(void *data);
-
-#endif //SIMPLECLIENTSERVER_SERVER_H
+#endif //SIMPLEFTPONTCP_SERVER_H

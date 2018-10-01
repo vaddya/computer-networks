@@ -5,19 +5,13 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <unistd.h>
 #include <string>
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include "readn.h"
 #include "request.h"
 #include "response.h"
-#include "readn.h"
-
-const size_t BUFFER_SIZE = 255;
 
 class SocketIO {
 
@@ -27,6 +21,10 @@ public:
     ~SocketIO();
 
     ssize_t sendRequest(Request request);
+
+    ssize_t sendResponse(Response response);
+
+    ssize_t sendBool(bool b);
 
     ssize_t sendString(const std::string &string);
 
@@ -38,6 +36,10 @@ public:
 
     Response getResponse();
 
+    Request getRequest();
+
+    bool getBool();
+
     std::string getString();
 
     size_t getDataSize();
@@ -47,6 +49,8 @@ public:
     void getFile(std::ofstream &file);
 
 private:
+    const size_t BUFFER_SIZE = 255;
+
     int *s;
 
     char *buffer;

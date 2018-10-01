@@ -18,13 +18,14 @@ void Client::connect(const std::string &server_addr, int port) {
     } else {
         peer.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
     }
+    s = new int;
     *s = socket(AF_INET, SOCK_STREAM, 0);
     if (s < 0) {
-        throw std::runtime_error("socket call failed");
+        std::cerr << "socket call failed" << std::endl;
     }
 
     if (::connect(*s, (struct sockaddr *) &peer, sizeof(peer))) {
-        throw std::runtime_error("Connecting failed");
+        std::cerr << "connecting to " << server_addr << ":" << port << " failed" << std::endl;
     }
 
     io = new SocketIO(s);
@@ -32,6 +33,7 @@ void Client::connect(const std::string &server_addr, int port) {
 
 void Client::disconnect() {
     if (s) {
+        io->sendRequest(Request::DISCONNECT);
         shutdown(*s, SHUT_RDWR);
         close(*s);
         delete io;
@@ -41,16 +43,27 @@ void Client::disconnect() {
     }
 }
 
-std::vector<std::string> Client::ls() {
+std::string Client::pwd() {
+    io->sendRequest(Request::PWD);
+    auto response = io->getResponse();
+    if (response != Response::OK) {
+        std::cerr << "pwd failed: " << response << std::endl;
+    }
+    return io->getString();
+}
+
+Client::FileList Client::ls() {
     io->sendRequest(Request::LS);
     auto response = io->getResponse();
     if (response != Response::OK) {
-        throw std::runtime_error("LS failed");
+        std::cerr << "ls failed: " << response << std::endl;
     }
     size_t size = io->getDataSize();
-    std::vector<std::string> names(size);
+    FileList names;
     for (auto i = 0; i < size; i++) {
-        names[i] = io->getString();
+        bool is_dir = io->getBool();
+        std::string name = io->getString();
+        names.emplace_back(is_dir, name);
     }
     return names;
 }
@@ -58,6 +71,11 @@ std::vector<std::string> Client::ls() {
 void Client::cd(const std::string &path) {
     io->sendRequest(Request::CD);
     io->sendString(path);
+
+    auto response = io->getResponse();
+    if (response != Response::OK) {
+        std::cerr << "cd failed: " << response << std::endl;
+    }
 }
 
 void Client::get(const std::string &file_name) {
@@ -66,7 +84,7 @@ void Client::get(const std::string &file_name) {
 
     auto response = io->getResponse();
     if (response != Response::OK) {
-        throw std::runtime_error("Get failed: " + response);
+        std::cerr << "get failed: " << response << std::endl;
     }
 
     std::ofstream file(file_name);
@@ -82,51 +100,6 @@ void Client::put(const std::string &file_name) {
 
     auto response = io->getResponse();
     if (response != Response::OK) {
-        throw std::runtime_error("Put failed: " + response);
+        std::cerr << "put failed: " << response << std::endl;
     }
-}
-
-int main(int argc, char **argv) {
-    auto client = Client();
-
-    std::string command;
-    std::cin >> command;
-    while (command != "exit") {
-        if (command == "connect") {
-            std::string host;
-            std::cin >> host;
-            int port;
-            std::cin >> port;
-            client.connect(host, port);
-        } else if (command == "ls") {
-            for (const auto &file : client.ls()) {
-                std::cout << file << std::endl;
-            }
-        } else if (command == "cd") {
-            std::string path;
-            std::cin >> path;
-            client.cd(path);
-        } else if (command == "get") {
-            std::string file_name;
-            std::cin >> file_name;
-            client.get(file_name);
-        } else if (command == "put") {
-            std::string file_name;
-            std::cin >> file_name;
-            client.put(file_name);
-        } else if (command == "disconnect") {
-            client.disconnect();
-        } else {
-            std::cout << "Supported commands: " << std::endl
-                      << " - connect" << std::endl
-                      << " - ls" << std::endl
-                      << " - cd" << std::endl
-                      << " - get" << std::endl
-                      << " - put" << std::endl
-                      << " - disconnect" << std::endl;
-        }
-        std::cin >> command;
-    }
-
-    return 0;
 }

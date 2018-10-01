@@ -1,29 +1,19 @@
-#ifndef SIMPLECLIENTSERVER_CLIENT_H
-#define SIMPLECLIENTSERVER_CLIENT_H
+#ifndef SIMPLEFTPONTCP_CLIENT_H
+#define SIMPLEFTPONTCP_CLIENT_H
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 #include <unistd.h>
 #include <string>
 #include <vector>
-#include <iostream>
 #include <fstream>
-#include <socket_io.h>
-#include "readn.h"
 #include "request.h"
 #include "response.h"
-
-const int PORT = 7000;
-
+#include "socket_io.h"
 
 class Client {
 
 public:
+    using FileList = std::vector<std::pair<bool, std::string>>;
+
     Client();
 
     ~Client();
@@ -41,10 +31,16 @@ public:
     void disconnect();
 
     /**
+     * Get current working directory
+     * @return directory
+     */
+    std::string pwd();
+
+    /**
      * List files and folders in current directory
      * @return list of files and folders
      */
-    std::vector<std::string> ls();
+    FileList ls();
 
     /**
      * Change current directory
@@ -72,4 +68,4 @@ private:
     SocketIO *io;
 };
 
-#endif //SIMPLECLIENTSERVER_CLIENT_H
+#endif //SIMPLEFTPONTCP_CLIENT_H
