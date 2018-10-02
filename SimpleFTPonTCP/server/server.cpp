@@ -1,107 +1,102 @@
 #include "server.h"
 
-Server::Server(int *socket, pthread_t *thread) {
-    socket_id = socket;
-    thread_id = thread;
-    path = std::string(SERVER_PATH);
-    io = new SocketIO(socket_id);
-}
+int main(int argc, char **argv) {
+    struct sockaddr_in local{};
+    local.sin_family = AF_INET;
+    local.sin_port = htons(PORT);
+    local.sin_addr.s_addr = htonl(INADDR_ANY);
 
-Server::~Server() {
-    delete socket_id;
-    delete thread_id;
-    delete io;
-}
+    auto ss = new int;
+    *ss = socket(AF_INET, SOCK_STREAM, 0);
+    if (*ss < 0) {
+        std::cerr << "socket call failed" << std::endl;
+        return 1;
+    }
+    int enable = 1;
+    setsockopt(*ss, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int));
+    int rc = bind(*ss, (struct sockaddr *) &local, sizeof(local));
+    if (rc < 0) {
+        std::cerr << "bind call failure" << std::endl;
+        return 1;
+    }
+    rc = listen(*ss, 5);
+    if (rc) {
+        std::cerr << "listen call failed" << std::endl;
+        return 1;
+    }
 
-void Server::processRequests() {
-    while (true) {
-        auto request = io->getRequest();
-        std::cout << "Got request " << request << " from socket " << *socket_id << std::endl;
-        switch (request) {
-            case Request::PWD:
-                pwd();
-                break;
-            case Request::LS:
-                ls();
-                break;
-            case Request::CD:
-                cd();
-                break;
-            case Request::GET:
-                get();
-                break;
-            case Request::PUT:
-                put();
-                break;
-            default:
-                std::cout << "Unknown request: " << request << std::endl;
-                return;
+    pthread_mutex_init(&mtx, nullptr);
+
+    pthread_t accept_thread_id;
+    pthread_create(&accept_thread_id, nullptr, &accept_thread, (void *) ss);
+
+    std::string command;
+    std::cin >> command;
+    while (command != "exit") {
+        if (command == "list") {
+            pthread_mutex_lock(&mtx);
+            std::cout << "Total " << servers.size() << " servers" << std::endl;
+            for (int i = 0; i < servers.size(); i++) {
+                std::cout << i << ": " << servers[i]->to_string() << std::endl;
+            }
+            pthread_mutex_unlock(&mtx);
+        } else if (command == "kill") {
+            int i;
+            std::cin >> i;
+            if (i >= 0 && i < servers.size()) {
+                pthread_mutex_lock(&mtx);
+                servers[i]->kill_and_join();
+                servers.erase(servers.begin() + i);
+                pthread_mutex_unlock(&mtx);
+            } else {
+                std::cout << "Wrong client index" << std::endl;
+            }
+        } else {
+            std::cout << "Supported commands: " << std::endl
+                      << " - list" << std::endl
+                      << " - kill x" << std::endl
+                      << " - exit" << std::endl;
         }
+        std::cin >> command;
+    }
+    shutdown(*ss, SHUT_RDWR);
+    close(*ss);
+    pthread_join(accept_thread_id, nullptr);
+    pthread_mutex_destroy(&mtx);
+    delete ss;
+    return 0;
+}
+
+void *client_thread(void *data) {
+    auto server = reinterpret_cast<FTPServer *>(data);
+    try {
+        server->process_requests();
+    } catch (std::exception &e) {
+        std::cerr << "Got exception " << e.what() << std::endl;
     }
 }
 
-void Server::kill_and_join() {
-    std::cout << "Killing client with socket: " << *socket_id << std::endl;
-    shutdown(*socket_id, SHUT_RDWR);
-    close(*socket_id);
-    pthread_join(*thread_id, nullptr);
-}
-
-void Server::pwd() {
-    io->sendResponse(Response::OK);
-    io->sendString(path.c_str());
-}
-
-void Server::ls() {
-    io->sendResponse(Response::OK);
-    size_t size = static_cast<size_t>(std::distance(
-            fs::directory_iterator(path), fs::directory_iterator())
-    );
-    io->sendDataSize(size);
-    for (auto &p : fs::directory_iterator(path)) {
-        io->sendBool(fs::is_directory(p.path()));
-        std::string str = p.path().string();
-        io->sendString(str);
+void *accept_thread(void *data) {
+    auto ss = reinterpret_cast<int *>(data);
+    while (true) {
+        auto cs = accept(*ss, nullptr, nullptr);
+        if (cs < 0) {
+            std::cout << "Cannot accept connection" << std::endl;
+            break;
+        }
+        auto thread_id = new pthread_t;
+        auto server = new FTPServer(cs, thread_id);
+        pthread_create(thread_id, nullptr, &client_thread, (void *) server);
+        pthread_mutex_lock(&mtx);
+        servers.push_back(server);
+        pthread_mutex_unlock(&mtx);
+        std::cout << "Joined client with socket " << cs << std::endl;
     }
-}
-
-void Server::cd() {
-    fs::path attempt = path / io->getString();
-    if (!fs::exists(attempt)) {
-        io->sendResponse(Response::NOT_EXISTS);
-    } else if (!fs::is_directory(attempt)) {
-        io->sendResponse(Response::NOT_DIRECTORY);
-    } else {
-        io->sendResponse(Response::OK);
-        path = fs::canonical(attempt);
+    std::cout << "Stopped accepting connections" << std::endl;
+    pthread_mutex_lock(&mtx);
+    for (auto s : servers) {
+        s->kill_and_join();
     }
-}
-
-void Server::get() {
-    fs::path attempt = path / io->getString();
-    if (!fs::exists(attempt)) {
-        io->sendResponse(Response::NOT_EXISTS);
-    } else if (!fs::is_regular_file(attempt)) {
-        io->sendResponse(Response::NOT_REGULAR_FILE);
-    } else {
-        io->sendResponse(Response::OK);
-        attempt = fs::canonical(attempt);
-        std::ifstream file(attempt);
-        io->sendFile(file);
-    }
-}
-
-void Server::put() {
-    fs::path attempt = path / io->getString();
-    if (fs::exists(attempt)) {
-        io->sendResponse(Response::ALREADY_EXISTS);
-    } else {
-        attempt = fs::canonical(attempt);
-        std::ofstream file(attempt);
-        io->getFile(file);
-    }
-}
-
-std::string Server::to_string() {
-    return std::string("[") + std::to_string(*socket_id) + ", " + std::to_string(*thread_id) + "]";
+    servers.clear();
+    pthread_mutex_unlock(&mtx);
 }

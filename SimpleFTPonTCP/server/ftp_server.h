@@ -1,35 +1,50 @@
-#ifndef SIMPLEFTPONTCP_FTP_SERVER_H
-#define SIMPLEFTPONTCP_FTP_SERVER_H
+#ifndef SIMPLEFTPONTCP_SERVER_H
+#define SIMPLEFTPONTCP_SERVER_H
 
-#include "server.h"
 #include <pthread.h>
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <unistd.h>
-#include <netinet/in.h>
+#include <string>
+#include <vector>
+#include <experimental/filesystem>
+#include "response.h"
+#include "socket_io.h"
 
-const int PORT = 7000;
+namespace fs = std::experimental::filesystem;
 
-/**
- * Global vector of clients
- */
-std::vector<Server *> servers;
+class FTPServer {
 
-/**
- * Global mutex to safe access vector of servers
- */
-pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
+public:
+    FTPServer(int socket, pthread_t *thread);
 
-/**
- * Client thread
- * @param data - client socket
- */
-void *client_thread(void *data);
+    ~FTPServer();
 
-/**
- * Thread to accept connections
- * @param data - server socket
- */
-void *accept_thread(void *data);
+    void process_requests();
 
-#endif //SIMPLEFTPONTCP_FTP_SERVER_H
+    void kill_and_join();
+
+    void pwd();
+
+    void ls();
+
+    void cd();
+
+    void get();
+
+    void put();
+
+    std::string to_string();
+
+private:
+    const std::string SERVER_PATH = "/home/vaddya/FTP/Server/";
+
+    fs::path path;
+
+    int socket_id;
+
+    pthread_t *thread_id;
+
+    SocketIO *io;
+};
+
+
+#endif //SIMPLEFTPONTCP_SERVER_H

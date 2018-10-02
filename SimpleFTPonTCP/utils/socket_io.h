@@ -16,7 +16,7 @@
 class SocketIO {
 
 public:
-    explicit SocketIO(int *socket);
+    explicit SocketIO(int socket);
 
     ~SocketIO();
 
@@ -51,7 +51,7 @@ public:
 private:
     const size_t BUFFER_SIZE = 255;
 
-    int *s;
+    int s;
 
     char *buffer;
 };
