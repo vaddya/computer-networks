@@ -8,6 +8,6 @@ add_subdirectory(client)
 add_subdirectory(server)
 add_subdirectory(utils)
 
-add_custom_target(SimpleFTPonTCP)
+add_custom_target(${PROJECT_NAME})
 
-add_dependencies(SimpleFTPonTCP server client)
+add_dependencies(${PROJECT_NAME} server client)

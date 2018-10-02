@@ -4,8 +4,10 @@
 enum Response : unsigned char {
     OK = 0,
     ERROR = 1,
-    CD_NOT_DIRECTORY = 2,
-    CD_NOT_EXIST = 3
+    NOT_DIRECTORY = 2,
+    NOT_REGULAR_FILE = 3,
+    NOT_EXISTS = 4,
+    ALREADY_EXISTS = 5
 };
 
 #endif //SIMPLEFTPONTCP_RESPONSE_H

@@ -82,7 +82,6 @@ void SocketIO::sendFile(std::ifstream &file) {
     file.seekg(0, std::ifstream::end);
     auto size = static_cast<size_t>(file.tellg());
     file.seekg(0, std::ifstream::beg);
-
     sendDataSize(size);
 
     size_t left = size;

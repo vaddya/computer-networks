@@ -68,21 +68,38 @@ void Server::ls() {
 void Server::cd() {
     fs::path attempt = path / io->getString();
     if (!fs::exists(attempt)) {
-        io->sendResponse(Response::CD_NOT_EXIST);
+        io->sendResponse(Response::NOT_EXISTS);
     } else if (!fs::is_directory(attempt)) {
-        io->sendResponse(Response::CD_NOT_DIRECTORY);
+        io->sendResponse(Response::NOT_DIRECTORY);
     } else {
-        path = fs::canonical(attempt);
         io->sendResponse(Response::OK);
+        path = fs::canonical(attempt);
     }
 }
 
 void Server::get() {
-
+    fs::path attempt = path / io->getString();
+    if (!fs::exists(attempt)) {
+        io->sendResponse(Response::NOT_EXISTS);
+    } else if (!fs::is_regular_file(attempt)) {
+        io->sendResponse(Response::NOT_REGULAR_FILE);
+    } else {
+        io->sendResponse(Response::OK);
+        attempt = fs::canonical(attempt);
+        std::ifstream file(attempt);
+        io->sendFile(file);
+    }
 }
 
 void Server::put() {
-
+    fs::path attempt = path / io->getString();
+    if (fs::exists(attempt)) {
+        io->sendResponse(Response::ALREADY_EXISTS);
+    } else {
+        attempt = fs::canonical(attempt);
+        std::ofstream file(attempt);
+        io->getFile(file);
+    }
 }
 
 std::string Server::to_string() {

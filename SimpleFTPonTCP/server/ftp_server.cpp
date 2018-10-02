@@ -9,19 +9,19 @@ int main(int argc, char **argv) {
     auto ss = new int;
     *ss = socket(AF_INET, SOCK_STREAM, 0);
     if (*ss < 0) {
-        perror("socket call failed");
+        std::cerr << "socket call failed" << std::endl;
         return 1;
     }
     int enable = 1;
     setsockopt(*ss, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int));
     int rc = bind(*ss, (struct sockaddr *) &local, sizeof(local));
     if (rc < 0) {
-        perror("bind call failure");
+        std::cerr << "bind call failure" << std::endl;
         return 1;
     }
     rc = listen(*ss, 5);
     if (rc) {
-        perror("listen call failed");
+        std::cerr << "listen call failed" << std::endl;
         return 1;
     }
 
@@ -62,6 +62,7 @@ int main(int argc, char **argv) {
     shutdown(*ss, SHUT_RDWR);
     close(*ss);
     pthread_join(accept_thread_id, nullptr);
+    delete ss;
     return 0;
 }
 

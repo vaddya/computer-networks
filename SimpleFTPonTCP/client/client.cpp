@@ -48,6 +48,7 @@ std::string Client::pwd() {
     auto response = io->getResponse();
     if (response != Response::OK) {
         std::cerr << "pwd failed: " << response << std::endl;
+        return "";
     }
     return io->getString();
 }
@@ -57,6 +58,7 @@ Client::FileList Client::ls() {
     auto response = io->getResponse();
     if (response != Response::OK) {
         std::cerr << "ls failed: " << response << std::endl;
+        return FileList();
     }
     size_t size = io->getDataSize();
     FileList names;
@@ -75,6 +77,7 @@ void Client::cd(const std::string &path) {
     auto response = io->getResponse();
     if (response != Response::OK) {
         std::cerr << "cd failed: " << response << std::endl;
+        return;
     }
 }
 
@@ -85,9 +88,10 @@ void Client::get(const std::string &file_name) {
     auto response = io->getResponse();
     if (response != Response::OK) {
         std::cerr << "get failed: " << response << std::endl;
+        return;
     }
 
-    std::ofstream file(file_name);
+    std::ofstream file("/home/vaddya/Test/Got/" + file_name);
     io->getFile(file);
 }
 
@@ -101,5 +105,6 @@ void Client::put(const std::string &file_name) {
     auto response = io->getResponse();
     if (response != Response::OK) {
         std::cerr << "put failed: " << response << std::endl;
+        return;
     }
 }
