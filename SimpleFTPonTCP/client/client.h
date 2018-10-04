@@ -3,6 +3,17 @@
 
 const int PORT = 7000;
 
+const char *CLIENT_HELP = R"(
+Supported commands:
+ - connect
+ - pwd
+ - ls
+ - cd
+ - get
+ - put
+ - disconnect
+)";
+
 #include <iostream>
 #include <sys/types.h>
 #include <sys/socket.h>

@@ -35,14 +35,7 @@ int main(int argc, char **argv) {
         } else if (command == "disconnect") {
             client.disconnect();
         } else {
-            std::cout << "Supported commands: " << std::endl
-                      << " - connect" << std::endl
-                      << " - pwd" << std::endl
-                      << " - ls" << std::endl
-                      << " - cd" << std::endl
-                      << " - get" << std::endl
-                      << " - put" << std::endl
-                      << " - disconnect" << std::endl;
+            std::cout << CLIENT_HELP << std::endl;
         }
         std::cin >> command;
     }

@@ -10,6 +10,13 @@
 
 const int PORT = 7000;
 
+const char *SERVER_HELP = R"(
+Supported commands:
+ - list
+ - kill x
+ - exit
+)";
+
 /**
  * Global vector of clients
  */
@@ -18,7 +25,7 @@ std::vector<FTPServer *> servers;
 /**
  * Global mutex to safe access vector of servers
  */
-pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
+pthread_rwlock_t lock = PTHREAD_RWLOCK_INITIALIZER;
 
 /**
  * Client thread

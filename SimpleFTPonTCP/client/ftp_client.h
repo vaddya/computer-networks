@@ -8,7 +8,7 @@
 #include "request.h"
 #include "response.h"
 #include "socket_io.h"
-#include "ftp-entity.h"
+#include "ftp_entity.h"
 
 class FTPClient {
 

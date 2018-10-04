@@ -24,8 +24,9 @@ void FTPClient::connect(const std::string &server_addr, int port) {
         return;
     }
 
-    if (::connect(s, (struct sockaddr *) &peer, sizeof(peer))) {
+    if (::connect(s, (sockaddr *) &peer, sizeof(peer))) {
         std::cerr << "connecting to " << server_addr << ":" << port << " failed" << std::endl;
+        disconnect();
         return;
     }
 
@@ -33,12 +34,16 @@ void FTPClient::connect(const std::string &server_addr, int port) {
 }
 
 void FTPClient::disconnect() {
-    if (s) {
+    if (io) {
         io->sendRequest(Request::DISCONNECT);
+        delete io;
+        io = nullptr;
+    }
+    if (s > 0) {
         shutdown(s, SHUT_RDWR);
         close(s);
+        s = 0;
     }
-    delete io;
 }
 
 std::string FTPClient::pwd() {

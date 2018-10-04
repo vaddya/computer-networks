@@ -6,7 +6,7 @@ SocketIO::SocketIO(int socket) {
 }
 
 SocketIO::~SocketIO() {
-    delete buffer;
+    delete[] buffer;
 }
 
 ssize_t SocketIO::sendRequest(Request request) {
@@ -80,8 +80,7 @@ std::string SocketIO::getString() {
 
 void SocketIO::sendFile(std::ifstream &file) {
     file.seekg(0, std::ifstream::end);
-    auto s = file.tellg();
-    auto size = static_cast<size_t>(s);
+    auto size = static_cast<size_t>(file.tellg());
     file.seekg(0, std::ifstream::beg);
     sendDataSize(size);
 
