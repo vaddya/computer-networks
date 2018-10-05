@@ -20,7 +20,9 @@ public:
 
     void process_requests();
 
-    void kill_and_join();
+    void close_socket();
+
+    void join();
 
     void pwd();
 

@@ -16,12 +16,12 @@ int main(int argc, char **argv) {
     setsockopt(*ss, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int));
     int rc = bind(*ss, (sockaddr *) &local, sizeof(local));
     if (rc < 0) {
-        std::cerr << "bind call failure" << std::endl;
+        std::cerr << "Bind call failure" << std::endl;
         return 1;
     }
     rc = listen(*ss, 5);
     if (rc) {
-        std::cerr << "listen call failed" << std::endl;
+        std::cerr << "Listen call failed" << std::endl;
         return 1;
     }
 
@@ -43,24 +43,23 @@ int main(int argc, char **argv) {
         } else if (command == "kill") {
             int i;
             std::cin >> i;
+            pthread_rwlock_wrlock(&lock);
             if (i >= 0 && i < servers.size()) {
-                pthread_rwlock_wrlock(&lock);
-                servers[i]->kill_and_join();
-                delete servers[i];
-                servers.erase(servers.begin() + i);
-                pthread_rwlock_unlock(&lock);
+                servers[i]->close_socket();
             } else {
                 std::cerr << "Wrong client index" << std::endl;
             }
+            pthread_rwlock_unlock(&lock);
         } else {
             std::cout << SERVER_HELP << std::endl;
-//            std::cout << "Supported commands: " << std::endl
-//                      << " - list" << std::endl
-//                      << " - kill x" << std::endl
-//                      << " - exit" << std::endl;
         }
         std::cin >> command;
     }
+    pthread_rwlock_wrlock(&lock);
+    for (auto s : servers) {
+        s->close_socket();
+    }
+    pthread_rwlock_unlock(&lock);
     shutdown(*ss, SHUT_RDWR);
     close(*ss);
     pthread_join(accept_thread_id, nullptr);
@@ -76,6 +75,15 @@ void *client_thread(void *data) {
     } catch (std::exception &e) {
         std::cerr << "Got exception " << e.what() << std::endl;
     }
+    pthread_rwlock_wrlock(&lock);
+    for (auto it = servers.begin(); it != servers.end(); it++) {
+        if (*it == server) {
+            delete *it;
+            servers.erase(it);
+            break;
+        }
+    }
+    pthread_rwlock_unlock(&lock);
 }
 
 void *accept_thread(void *data) {
@@ -95,11 +103,4 @@ void *accept_thread(void *data) {
         std::cout << "Joined client with socket " << cs << std::endl;
     }
     std::cout << "Stopped accepting connections" << std::endl;
-    pthread_rwlock_wrlock(&lock);
-    for (auto s : servers) {
-        s->kill_and_join();
-        delete s;
-    }
-    servers.clear();
-    pthread_rwlock_unlock(&lock);
 }

@@ -41,10 +41,12 @@ void FTPServer::process_requests() {
     }
 }
 
-void FTPServer::kill_and_join() {
-    std::cout << "Killing server with socket: " << socket_id << std::endl;
+void FTPServer::close_socket() {
     shutdown(socket_id, SHUT_RDWR);
     close(socket_id);
+}
+
+void FTPServer::join() {
     pthread_join(*thread_id, nullptr);
 }
 
@@ -106,3 +108,4 @@ void FTPServer::put() {
 std::string FTPServer::to_string() {
     return std::string("[") + std::to_string(socket_id) + ", " + std::to_string(*thread_id) + "]";
 }
+

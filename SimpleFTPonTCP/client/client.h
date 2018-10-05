@@ -12,6 +12,7 @@ Supported commands:
  - get
  - put
  - disconnect
+ - exit
 )";
 
 #include <iostream>

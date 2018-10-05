@@ -6,7 +6,7 @@
 
 class FTPEntity {
 public:
-    FTPEntity(const std::string &&name, bool is_directory) : _name(name), _is_directory(is_directory) {}
+    FTPEntity(std::string name, bool is_directory) : _name(std::move(name)), _is_directory(is_directory) {}
 
     std::string name() const {
         return _name;
