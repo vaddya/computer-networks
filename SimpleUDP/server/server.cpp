@@ -25,11 +25,10 @@ int main(int argc, char **argv) {
 
     sockaddr_in from{};
     socklen_t from_size = sizeof(from);
-    recvfrom(s, buffer, BUFFER_SIZE, 0, (sockaddr *) &from, &from_size);
+    ssize_t a = recvfrom(s, buffer, BUFFER_SIZE, 0, (sockaddr *) &from, &from_size);
     std::cout << "server received: " << buffer << std::endl;
 
-    buffer[0] = 'W';
-    buffer[7] = 'H';
+    buffer[0] = 'X';
     sendto(s, buffer, BUFFER_SIZE, 0, (sockaddr *) &from, from_size);
     std::cout << "server send back: " << buffer << std::endl;
 
