@@ -3,6 +3,8 @@
 
 #include <cstring>
 #include <cassert>
+#include <algorithm>
+#include <vector>
 #include "package_type.h"
 #include "response.h"
 #include "request.h"
@@ -21,12 +23,21 @@ public:
 
     Package(char *buffer, ssize_t size) {
         assert(size >= counter_size + type_size + reqresp_size);
-        memcpy(reinterpret_cast<char *>(&counter), buffer, counter_size);
-        memcpy(reinterpret_cast<char *>(&type), buffer + counter_size, type_size);
-        memcpy(reinterpret_cast<char *>(&reqresp), buffer + counter_size + type_size, reqresp_size);
+        memcpy(&counter, buffer, counter_size);
+        memcpy(&type, buffer + counter_size, type_size);
+        memcpy(&reqresp, buffer + counter_size + type_size, reqresp_size);
         data_size = size - counter_size - type_size - reqresp_size;
         data = new char[data_size];
         memcpy(data, buffer + counter_size + type_size + reqresp_size, data_size);
+    }
+
+    Package(const Package &other) {
+        counter = other.counter;
+        type = other.type;
+        reqresp = other.reqresp;
+        data_size = other.data_size;
+        data = new char[data_size];
+        memcpy(data, other.data, data_size);
     }
 
     ~Package() {
@@ -43,6 +54,22 @@ public:
 
     static Package response(size_t counter, Response response, const char *data, size_t data_size) {
         return Package(counter, PackageType::RESPONSE, response, data, data_size);
+    }
+
+    static Package response(size_t counter, Response response, std::vector<std::string> list) {
+        size_t count = list.size();
+        size_t buffer_size = sizeof counter;
+        std::for_each(list.begin(), list.end(), [&buffer_size](std::string str) {
+            buffer_size += str.size() + 1;
+        });
+        auto buffer = new char[buffer_size];
+        memcpy(buffer, &count, sizeof counter);
+        char *it = buffer + sizeof counter;
+        std::for_each(list.begin(), list.end(), [&it](std::string str) {
+            memcpy(it, str.c_str(), str.size() + 1);
+            it += str.size() + 1;
+        });
+        return Package(counter, PackageType::RESPONSE, response, buffer, buffer_size);
     }
 
     static Package response(size_t counter, Response response) {
@@ -92,21 +119,38 @@ public:
         assert(type == PackageType::ACK);
         size_t ack;
         assert(data_size >= sizeof ack);
-        memcpy(reinterpret_cast<char *>(&ack), data, sizeof ack);
+        memcpy(&ack, data, sizeof ack);
         return ack;
+    }
+
+    std::vector<std::string> extractList() const {
+        std::vector<std::string> list;
+        size_t size;
+        memcpy(&size, data, sizeof size);
+        char *it = data + sizeof size;
+        for (int i = 0; i < size; i++) {
+            size_t len = strlen(it);
+            list.emplace_back(it, len);
+            it += len + 1;
+        }
+        return list;
+    }
+
+    std::string extractString() const {
+        return std::string(data, data_size);
     }
 
     std::string toString() const {
         switch (type) {
             case PackageType::ACK:
                 return "[#" + std::to_string(counter) + ", " + type2string(type) + " for " +
-                       std::to_string(extractAck()) + ", " + std::to_string(data_size) + "]";
+                       std::to_string(extractAck()) + ", " + std::to_string(data_size) + " bytes]";
             case PackageType::REQUEST:
                 return "[#" + std::to_string(counter) + ", " + type2string(type) + ", " +
-                       request2string(static_cast<Request>(reqresp)) + ", " + std::to_string(data_size) + "]";
+                       request2string(static_cast<Request>(reqresp)) + ", " + std::to_string(data_size) + " bytes]";
             case PackageType::RESPONSE:
                 return "[#" + std::to_string(counter) + ", " + type2string(type) + ", " +
-                       response2string(static_cast<Response >(reqresp)) + ", " + std::to_string(data_size) + "]";
+                       response2string(static_cast<Response >(reqresp)) + ", " + std::to_string(data_size) + " bytes]";
         }
     }
 

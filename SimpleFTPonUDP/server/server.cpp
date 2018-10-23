@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
 void *proc_thread(void *data) {
     auto s = reinterpret_cast<int *>(data);
     sockaddr_in from{};
-    socklen_t from_size = sizeof(from);
+    socklen_t from_size = sizeof from;
     auto io = new SocketIO(*s);
     while (!end) {
         Package req = io->receive(reinterpret_cast<sockaddr *>(&from), &from_size);

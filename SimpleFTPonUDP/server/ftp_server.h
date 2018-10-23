@@ -70,53 +70,56 @@ private:
     }
 
     void ls(const Package &req) {
-//        io->sendResponse(Response::OK);
-//        size_t size = static_cast<size_t>(std::distance(
-//                fs::directory_iterator(path), fs::directory_iterator())
-//        );
-//        io->sendDataSize(size);
-//        for (auto &p : fs::directory_iterator(path)) {
-//            io->sendBool(fs::is_directory(p.path()));
-//            std::string str = p.path().filename();
-//            io->sendString(str);
-//        }
+        size_t size = static_cast<size_t>(std::distance(fs::directory_iterator(path), fs::directory_iterator()));
+        std::vector<std::string> list;
+        for (auto &p : fs::directory_iterator(path)) {
+            list.push_back(p.path().filename());
+        }
+        io->send(peer, Package::response(counter, Response::OK, list));
+        counter += 2; // our msg + usr ack
     }
 
     void cd(const Package &req) {
-//        fs::path attempt = path / io->getString();
-//        if (!fs::exists(attempt)) {
-//            io->sendResponse(Response::NOT_EXISTS);
-//        } else if (!fs::is_directory(attempt)) {
-//            io->sendResponse(Response::NOT_DIRECTORY);
-//        } else {
-//            io->sendResponse(Response::OK);
-//            path = fs::canonical(attempt);
-//        }
+        fs::path attempt = path / req.extractString();
+        if (!fs::exists(attempt)) {
+            io->send(peer, Package::response(counter, Response::NOT_EXISTS));
+        } else if (!fs::is_directory(attempt)) {
+            io->send(peer, Package::response(counter, Response::NOT_DIRECTORY));
+        } else {
+            io->send(peer, Package::response(counter, Response::OK));
+            path = fs::canonical(attempt);
+        }
+        counter += 2; // our msg + usr ack
     }
 
     void get(const Package &req) {
-//        fs::path attempt = path / io->getString();
-//        if (!fs::exists(attempt)) {
-//            io->send(Package::response(Response::NOT_EXISTS));
-//        } else if (!fs::is_regular_file(attempt)) {
-//            io->send(Package::response(Response::NOT_REGULAR_FILE));
-//        } else {
-//            io->send(Package::response(Response::OK, ))
-//            attempt = fs::canonical(attempt);
-//            std::ifstream file(attempt);
-//            io->send(file);
-//        }
+        fs::path attempt = path / req.extractString();
+        if (!fs::exists(attempt)) {
+            io->send(peer, Package::response(counter, Response::NOT_EXISTS));
+            counter += 2; // our msg + usr ack
+        } else if (!fs::is_regular_file(attempt)) {
+            io->send(peer, Package::response(counter, Response::NOT_REGULAR_FILE));
+            counter += 2; // our msg + usr ack
+        } else {
+            io->send(peer, Package::response(counter, Response::OK));
+            counter += 2; // our msg + usr ack
+            attempt = fs::canonical(attempt);
+            std::ifstream file(attempt);
+            counter = io->sendFile(peer, counter, file);
+        }
     }
 
     void put(const Package &req) {
-//        fs::path attempt = path / io->getString();
-//        if (fs::exists(attempt)) {
-//            io->sendResponse(Response::ALREADY_EXISTS);
-//        } else {
-//            io->sendResponse(Response::OK);
-//            std::ofstream file(attempt);
-//            io->receive(file);
-//        }
+        fs::path attempt = path / req.extractString();
+        if (fs::exists(attempt)) {
+            io->send(peer, Package::response(counter, Response::ALREADY_EXISTS));
+            counter += 2; // our msg + usr ack
+        } else {
+            io->send(peer, Package::response(counter, Response::OK));
+            counter += 2; // our msg + usr ack
+            std::ofstream file(attempt);
+            counter = io->receiveFile(peer, counter, file);
+        }
     }
 
     const std::string SERVER_PATH = "/home/vaddya/FTP/Server/";

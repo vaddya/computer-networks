@@ -58,74 +58,77 @@ std::string FTPClient::pwd() {
     validate();
     io->send(peer, Package::request(counter, Request::PWD));
     Package resp = io->receive(nullptr, nullptr);
-    counter = resp.getCounter() + 1;
+    counter += 3; // our msg + srv ack + srv resp
     io->send(peer, Package::ack(counter, resp.getCounter()));
-    counter += 1;
+    counter += 1; // our ack
     if (resp.getResponse() != Response::OK) {
         std::cerr << "pwd failed: " << response2string(resp.getResponse()) << std::endl;
         return "";
     }
-    return std::string(resp.getData(), resp.getDataSize());
+    return resp.extractString();
 }
 
-std::vector<FTPEntity> FTPClient::ls() {
+std::vector<std::string> FTPClient::ls() {
     validate();
-    io->send(peer, Package::request(counter++, Request::LS));
-    Package p = io->receive(nullptr, nullptr);
-    std::vector<FTPEntity> entities;
-    if (p.getResponse() != Response::OK) {
-        std::cerr << "ls failed: " << response2string(p.getResponse()) << std::endl;
+    io->send(peer, Package::request(counter, Request::LS));
+    Package resp = io->receive(nullptr, nullptr);
+    counter += 3; // our msg + srv ack + srv resp
+    io->send(peer, Package::ack(counter, resp.getCounter()));
+    counter += 1; // our ack
+    std::vector<std::string> entities;
+    if (resp.getResponse() != Response::OK) {
+        std::cerr << "ls failed: " << response2string(resp.getResponse()) << std::endl;
         return entities;
     }
-//    size_t size = io->getDataSize();
-//    for (auto i = 0; i < size; i++) {
-//        bool is_directory = io->getBool();
-//        std::string name = io->getString();
-//        entities.emplace_back(name, is_directory);
-//    }
-    return entities;
+    return resp.extractList();
 }
 
 void FTPClient::cd(const std::string &path) {
     validate();
-    io->send(peer, Package::request(counter++, Request::CD, path.c_str(), path.size()));
+    io->send(peer, Package::request(counter, Request::CD, path.c_str(), path.size() + 1));
+    Package resp = io->receive(nullptr, nullptr);
+    counter += 3; // our msg + srv ack + srv resp
+    io->send(peer, Package::ack(counter, resp.getCounter()));
+    counter += 1; // our ack
 
-    Package p = io->receive();
-
-    if (p.getResponse() != Response::OK) {
-        std::cerr << "cd failed: " << response2string(p.getResponse()) << std::endl;
+    if (resp.getResponse() != Response::OK) {
+        std::cerr << "cd failed: " << response2string(resp.getResponse()) << std::endl;
         return;
+    } else {
+        std::cout << "done" << std::endl;
     }
 }
 
 void FTPClient::get(const std::string &file_name) {
     validate();
-//    io->sendRequest(Request::GET);
-//    io->sendString(file_name);
-//
-//    auto response = io->getResponse();
-//    if (response != Response::OK) {
-//        std::cerr << "get failed: " << response2string(response) << std::endl;
-//        return;
-//    }
-//
-//    std::ofstream file(CLIENT_PATH + file_name);
-//    io->receive(file);
+    io->send(peer, Package::request(counter, Request::GET, file_name.c_str(), file_name.size()));
+    Package resp = io->receive(nullptr, nullptr);
+    counter += 3; // our msg + srv ack + srv resp
+    io->send(peer, Package::ack(counter, resp.getCounter()));
+    counter += 1; // our ack
+    if (resp.getResponse() != Response::OK) {
+        std::cerr << "get failed: " << response2string(resp.getResponse()) << std::endl;
+        return;
+    }
+    std::ofstream file(CLIENT_PATH + file_name);
+    counter = io->receiveFile(peer, counter, file);
+    std::cout << "done" << std::endl;
 }
 
 void FTPClient::put(const std::string &file_name) {
     validate();
-//    io->sendRequest(Request::PUT);
-//    io->sendString(file_name);
-//
-//    std::ifstream file(CLIENT_PATH + file_name, std::ifstream::binary);
-//    io->send(file);
-//
-//    auto response = io->getResponse();
-//    if (response != Response::OK) {
-//        std::cerr << "put failed: " << response2string(response) << std::endl;
-//        return;
-//    }
+    io->send(peer, Package::request(counter, Request::PUT, file_name.c_str(), file_name.size()));
+    Package resp = io->receive(nullptr, nullptr);
+    counter += 3; // our msg + srv ack + srv resp
+    io->send(peer, Package::ack(counter, resp.getCounter()));
+    counter += 1; // our ack
+    if (resp.getResponse() != Response::OK) {
+        std::cerr << "get failed: " << response2string(resp.getResponse()) << std::endl;
+        return;
+    }
+    std::ifstream file(CLIENT_PATH + file_name, std::ifstream::binary);
+    counter = io->sendFile(peer, counter, file);
+    std::cout << "done" << std::endl;
 }
 
 void FTPClient::validate() {

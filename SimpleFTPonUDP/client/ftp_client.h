@@ -8,7 +8,6 @@
 #include "request.h"
 #include "response.h"
 #include "socket_io.h"
-#include "ftp_entity.h"
 
 class FTPClient {
 
@@ -39,7 +38,7 @@ public:
      * List files and folders in current directory
      * @return list of files and folders
      */
-    std::vector<FTPEntity> ls();
+    std::vector<std::string> ls();
 
     /**
      * Change current directory
