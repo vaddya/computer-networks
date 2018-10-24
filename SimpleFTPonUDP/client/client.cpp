@@ -2,7 +2,6 @@
 
 int main(int argc, char **argv) {
     auto client = FTPClient();
-
     client.connect("localhost", 7000);
 
     std::string command;
@@ -15,10 +14,11 @@ int main(int argc, char **argv) {
             std::cin >> port;
             client.connect(host, port);
         } else if (command == "pwd") {
-            std::cout << client.pwd() << std::endl;
+            std::string pwd = client.pwd();
+            std::cout << "> " << pwd << std::endl;
         } else if (command == "ls") {
             for (const auto &str : client.ls()) {
-                std::cout << str << std::endl;
+                std::cout << "> " << str << std::endl;
             }
         } else if (command == "cd") {
             std::string path;

@@ -8,6 +8,8 @@ std::string type2string(PackageType type) {
             return "response";
         case PackageType::ACK:
             return "ack";
+        case PackageType::EMPTY:
+            return "empty";
         default:
             return "unknown";
     }

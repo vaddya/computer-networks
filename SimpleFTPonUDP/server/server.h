@@ -19,8 +19,6 @@ Supported commands:
  - exit
 )";
 
-bool end = false;
-
 pthread_rwlock_t lock = PTHREAD_RWLOCK_INITIALIZER;
 
 std::map<Peer, FTPServer *> servers;

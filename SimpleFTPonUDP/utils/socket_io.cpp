@@ -12,7 +12,7 @@ SocketIO::~SocketIO() {
     delete[] file_buffer;
 }
 
-ssize_t SocketIO::send(sockaddr_in peer, Package req) {
+ssize_t SocketIO::sendTo(sockaddr_in peer, Package req) {
     size_t size = req.fillBuffer(out_buffer, UDP_MAX_SIZE);
     fd_set set;
     timeval timeout{};
@@ -37,7 +37,7 @@ ssize_t SocketIO::send(sockaddr_in peer, Package req) {
             if (resp.getType() != PackageType::ACK) {
                 std::cerr << "Got too old package, ack: " << resp.getCounter() << " instead of "
                           << req.getCounter() + 1 << std::endl;
-                send(peer, Package::ack(resp.getCounter() + 1, resp.getCounter()));
+                sendTo(peer, Package::ack(resp.getCounter() + 1, resp.getCounter()));
             }
         } else if (resp.getCounter() == req.getCounter() + 1) {
             if (resp.getType() == PackageType::ACK) {
@@ -68,16 +68,25 @@ size_t SocketIO::sendFile(sockaddr_in peer, size_t counter, std::ifstream &file)
     while (true) {
         if (left > FILE_BUFFER_SIZE) {
             file.read(file_buffer, FILE_BUFFER_SIZE);
-            send(peer, Package::response(counter, Response::FILE_DATA, file_buffer, FILE_BUFFER_SIZE));
+            sendTo(peer, Package::response(counter, Response::FILE_DATA, file_buffer, FILE_BUFFER_SIZE));
             left -= FILE_BUFFER_SIZE;
         } else {
             file.read(file_buffer, left);
-            send(peer, Package::response(counter, Response::FILE_DATA_END, file_buffer, left));
+            sendTo(peer, Package::response(counter, Response::FILE_DATA_END, file_buffer, left));
             break;
         }
         counter += 2;
     }
     return counter;
+}
+
+Package SocketIO::receive(sockaddr *from, socklen_t *from_size) {
+    ssize_t rc = recvfrom(s, in_buffer, UDP_MAX_SIZE, 0, from, from_size);
+    if (rc <= 0) {
+        std::cerr << "Cannot read from socket, errno: " << strerror(errno);
+        return Package::empty();
+    }
+    return Package::parse(in_buffer, rc);
 }
 
 Package SocketIO::receiveFrom(sockaddr_in peer) {
@@ -95,25 +104,11 @@ Package SocketIO::receiveFrom(sockaddr_in peer) {
     }
 }
 
-Package SocketIO::receive(sockaddr *from, socklen_t *from_size) {
-    ssize_t rc = recvfrom(s, in_buffer, UDP_MAX_SIZE, 0, from, from_size);
-    if (rc < 0) {
-        std::string err = strerror(errno);
-        std::cout << err;
-    }
-    Package p(in_buffer, rc);
-    return p;
-}
-
-Package SocketIO::receive() {
-    return receive(nullptr, nullptr);
-}
-
 size_t SocketIO::receiveFile(sockaddr_in peer, size_t counter, std::ofstream &file) {
     while (true) {
         Package resp = receiveFrom(peer);
         counter += 1;
-        send(peer, Package::ack(counter, resp.getCounter()));
+        sendTo(peer, Package::ack(counter, resp.getCounter()));
         counter += 1;
         file.write(resp.getData(), resp.getDataSize());
         if (resp.getResponse() == Response::FILE_DATA) {

@@ -26,24 +26,25 @@ void FTPClient::connect(const std::string &server_addr, int port) {
     }
 
     io = new SocketIO(s);
-    io->send(peer, Package::request(counter, Request::CONNECT));
+    io->sendTo(peer, Package::request(counter, Request::CONNECT));
     counter += 1;
-    Package resp = io->receive();
+    Package resp = io->receiveFrom(peer);
     if (resp.getCounter() != counter + 1) {
         std::cerr << "wrong resp counter" << std::endl;
         return;
     }
     counter += 2;
-    io->send(peer, Package::ack(counter, resp.getCounter()));
+    io->sendTo(peer, Package::ack(counter, resp.getCounter()));
     counter += 1;
     if (resp.getResponse() != Response::OK) {
         std::cerr << "connect failed: " << response2string(resp.getResponse());
     }
+    std::cout << "done" << std::endl;
 }
 
 void FTPClient::disconnect() {
     if (io) {
-        io->send(peer, Package::request(counter, Request::DISCONNECT));
+        io->sendTo(peer, Package::request(counter, Request::DISCONNECT));
         delete io;
         io = nullptr;
     }
@@ -56,10 +57,10 @@ void FTPClient::disconnect() {
 
 std::string FTPClient::pwd() {
     validate();
-    io->send(peer, Package::request(counter, Request::PWD));
-    Package resp = io->receive(nullptr, nullptr);
+    io->sendTo(peer, Package::request(counter, Request::PWD));
+    Package resp = io->receiveFrom(peer);
     counter += 3; // our msg + srv ack + srv resp
-    io->send(peer, Package::ack(counter, resp.getCounter()));
+    io->sendTo(peer, Package::ack(counter, resp.getCounter()));
     counter += 1; // our ack
     if (resp.getResponse() != Response::OK) {
         std::cerr << "pwd failed: " << response2string(resp.getResponse()) << std::endl;
@@ -70,10 +71,10 @@ std::string FTPClient::pwd() {
 
 std::vector<std::string> FTPClient::ls() {
     validate();
-    io->send(peer, Package::request(counter, Request::LS));
-    Package resp = io->receive(nullptr, nullptr);
+    io->sendTo(peer, Package::request(counter, Request::LS));
+    Package resp = io->receiveFrom(peer);
     counter += 3; // our msg + srv ack + srv resp
-    io->send(peer, Package::ack(counter, resp.getCounter()));
+    io->sendTo(peer, Package::ack(counter, resp.getCounter()));
     counter += 1; // our ack
     std::vector<std::string> entities;
     if (resp.getResponse() != Response::OK) {
@@ -85,10 +86,10 @@ std::vector<std::string> FTPClient::ls() {
 
 void FTPClient::cd(const std::string &path) {
     validate();
-    io->send(peer, Package::request(counter, Request::CD, path.c_str(), path.size() + 1));
-    Package resp = io->receive(nullptr, nullptr);
+    io->sendTo(peer, Package::request(counter, Request::CD, path.c_str(), path.size() + 1));
+    Package resp = io->receiveFrom(peer);
     counter += 3; // our msg + srv ack + srv resp
-    io->send(peer, Package::ack(counter, resp.getCounter()));
+    io->sendTo(peer, Package::ack(counter, resp.getCounter()));
     counter += 1; // our ack
 
     if (resp.getResponse() != Response::OK) {
@@ -101,26 +102,26 @@ void FTPClient::cd(const std::string &path) {
 
 void FTPClient::get(const std::string &file_name) {
     validate();
-    io->send(peer, Package::request(counter, Request::GET, file_name.c_str(), file_name.size()));
-    Package resp = io->receive(nullptr, nullptr);
+    io->sendTo(peer, Package::request(counter, Request::GET, file_name.c_str(), file_name.size()));
+    Package resp = io->receiveFrom(peer);
     counter += 3; // our msg + srv ack + srv resp
-    io->send(peer, Package::ack(counter, resp.getCounter()));
+    io->sendTo(peer, Package::ack(counter, resp.getCounter()));
     counter += 1; // our ack
     if (resp.getResponse() != Response::OK) {
         std::cerr << "get failed: " << response2string(resp.getResponse()) << std::endl;
         return;
     }
-    std::ofstream file(CLIENT_PATH + file_name);
+    std::ofstream file(CLIENT_PATH + file_name, std::ifstream::binary);
     counter = io->receiveFile(peer, counter, file);
     std::cout << "done" << std::endl;
 }
 
 void FTPClient::put(const std::string &file_name) {
     validate();
-    io->send(peer, Package::request(counter, Request::PUT, file_name.c_str(), file_name.size()));
-    Package resp = io->receive(nullptr, nullptr);
+    io->sendTo(peer, Package::request(counter, Request::PUT, file_name.c_str(), file_name.size()));
+    Package resp = io->receiveFrom(peer);
     counter += 3; // our msg + srv ack + srv resp
-    io->send(peer, Package::ack(counter, resp.getCounter()));
+    io->sendTo(peer, Package::ack(counter, resp.getCounter()));
     counter += 1; // our ack
     if (resp.getResponse() != Response::OK) {
         std::cerr << "get failed: " << response2string(resp.getResponse()) << std::endl;

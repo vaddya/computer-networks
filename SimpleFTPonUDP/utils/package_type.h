@@ -6,7 +6,8 @@
 enum PackageType : unsigned char {
     REQUEST = 0,
     RESPONSE = 1,
-    ACK = 2
+    ACK = 2,
+    EMPTY = 3
 };
 
 std::string type2string(PackageType type);

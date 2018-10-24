@@ -9,7 +9,7 @@ std::string response2string(Response response) {
         case Response::FILE_DATA:
             return "file";
         case Response::FILE_DATA_END:
-            return "end of file";
+            return "eof";
         case Response::NOT_DIRECTORY:
             return "not directory";
         case Response::NOT_REGULAR_FILE:
