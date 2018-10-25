@@ -33,7 +33,11 @@ ssize_t SocketIO::sendTo(sockaddr_in peer, Package req) {
         }
 
         Package resp = receiveFrom(peer);
-        if (resp.getCounter() < req.getCounter() + 1) {
+        if (resp.getType() == PackageType::RESPONSE && resp.getResponse() == Response::ERROR) {
+            std::cerr << "Got error instead of ACK, something wrong!" << std::endl;
+            sendTo(peer, Package::ack(resp.getCounter() + 1, resp.getCounter()));
+            break;
+        } else if (resp.getCounter() < req.getCounter() + 1) {
             if (resp.getType() != PackageType::ACK) {
                 std::cerr << "Got too old package, ack: " << resp.getCounter() << " instead of "
                           << req.getCounter() + 1 << std::endl;

@@ -7,9 +7,10 @@ FTPServer::FTPServer(SocketIO *io, sockaddr_in peer, socklen_t peer_size) : io(i
 
 void FTPServer::process_request(const Package &req) {
     if (req.getCounter() != counter) {
-        std::cerr << "Wrong package indexes: " << req.getCounter() << " instead of " << counter
-                  << ", updating counter" << std::endl;
-        counter = req.getCounter();
+        std::cerr << "Wrong package indexes: " << req.getCounter() << " instead of " << counter << std::endl;
+        io->sendTo(peer, Package::response(counter, Response::ERROR));
+        counter += 1;
+        return;
     }
     counter += 1; // usr msg
     io->sendTo(peer, Package::ack(counter, req.getCounter()));

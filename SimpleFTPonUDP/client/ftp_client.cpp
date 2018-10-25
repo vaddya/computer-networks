@@ -57,6 +57,7 @@ void FTPClient::disconnect() {
 
 std::string FTPClient::pwd() {
     validate();
+//    counter += 100; // oops
     io->sendTo(peer, Package::request(counter, Request::PWD));
     Package resp = io->receiveFrom(peer);
     counter += 3; // our msg + srv ack + srv resp
