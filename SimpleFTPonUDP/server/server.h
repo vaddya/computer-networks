@@ -10,8 +10,6 @@
 #include "ftp_server.h"
 #include "peer.h"
 
-const int PORT = 7000;
-
 const char *SERVER_HELP = R"(
 Supported commands:
  - list

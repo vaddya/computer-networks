@@ -1,5 +1,7 @@
 #include "server.h"
 
+const int PORT = 7000;
+
 int main(int argc, char **argv) {
     sockaddr_in local{};
     local.sin_family = AF_INET;
@@ -11,7 +13,7 @@ int main(int argc, char **argv) {
         std::cerr << "socket call failed" << std::endl;
         return 1;
     }
-    int enable = 1;
+    auto enable = 1;
     setsockopt(s, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int));
     auto rc = bind(s, (sockaddr *) &local, sizeof(local));
     if (rc < 0) {
@@ -41,6 +43,7 @@ int main(int argc, char **argv) {
             auto it = servers.begin();
             while (it != servers.end()) {
                 if (it->first.toString() == str) {
+                    delete *it;
                     servers.erase(it);
                     break;
                 }
@@ -68,13 +71,15 @@ void *proc_thread(void *data) {
     while (req.getType() != PackageType::EMPTY) {
         Peer peer(from);
         if (servers.find(peer) == servers.end()) {
-            pthread_rwlock_wrlock(&lock);
+            pthread_rwlock_rdlock(&lock);
             servers[peer] = new FTPServer(io, from, from_size);
             pthread_rwlock_unlock(&lock);
             std::cout << "Client joined: " << peer.toString() << std::endl;
         }
         std::cout << "Received package " << req.toString() << " from " << peer.toString() << std::endl;
+        pthread_rwlock_rdlock(&lock);
         servers[peer]->process_request(req);
+        pthread_rwlock_unlock(&lock);
         if (req.getType() == PackageType::REQUEST && req.getRequest() == Request::DISCONNECT &&
             servers.find(peer) != servers.end()) {
             pthread_rwlock_wrlock(&lock);
@@ -87,4 +92,5 @@ void *proc_thread(void *data) {
     }
     std::cout << "Stopped processing" << std::endl;
     delete io;
+    return nullptr;
 }
