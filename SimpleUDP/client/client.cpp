@@ -8,12 +8,10 @@ int main(int argc, char **argv) {
 
     char recv_buf[BUFFER_SIZE];
     memset(recv_buf, 0, BUFFER_SIZE);
-    char const *send_buf;
-    if (argc > 1) {
-        send_buf = argv[1];
-    } else {
-        send_buf = "Hello, World!";
-    }
+
+    char send_buf[BUFFER_SIZE + 1];
+    memset(send_buf, 5, BUFFER_SIZE);
+    send_buf[BUFFER_SIZE] = '\0';
 
     auto s = socket(AF_INET, SOCK_DGRAM, 0);
     if (s < 0) {
@@ -21,12 +19,13 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    sendto(s, send_buf, strlen(send_buf), 0, (sockaddr *) &peer, sizeof(peer));
+    auto ns = sendto(s, send_buf, 5, 0, (sockaddr *) &peer, sizeof(peer));
+    std::cout << ns << "/" << strlen(send_buf) << std::endl;
     std::cout << "client send: " << send_buf << std::endl;
 
     sockaddr_in from{};
-    socklen_t from_size = sizeof(from);
-    recvfrom(s, recv_buf, BUFFER_SIZE, 0, (sockaddr *) &from, &from_size);
+    socklen_t from_size;
+    ssize_t res = recvfrom(s, recv_buf, BUFFER_SIZE, 0, (sockaddr *) &from, &from_size);
     std::cout << "client received back: " << recv_buf << std::endl;
 
     shutdown(s, SHUT_RDWR);

@@ -10,6 +10,6 @@
 
 const int PORT = 7000;
 
-const int BUFFER_SIZE = 255;
+const int BUFFER_SIZE = 65507;
 
 #endif //SIMPLECLIENTSERVER_SERVER_H
