@@ -1,0 +1,8 @@
+vaddya@turing:~$ sudo traceroute ya.ru -I
+traceroute to ya.ru (87.250.250.242), 30 hops max, 60 byte packets
+ 1  _gateway (192.168.1.1)  7.332 ms  7.326 ms *
+ 2  10.83.255.126 (10.83.255.126)  37.118 ms  37.150 ms  49.031 ms
+ 3  lag-2-435.bgw01.spb.ertelecom.ru (109.195.88.18)  45.522 ms  51.934 ms  55.055 ms
+ 4  as9049.ix.dataix.ru (178.18.224.152)  58.116 ms  58.139 ms  58.143 ms
+ 5  178.18.225.147.ix.dataix.ru (178.18.225.147)  64.050 ms  68.412 ms  68.418 ms
+ 6  ya.ru (87.250.250.242)  72.246 ms  64.574 ms  68.040 ms

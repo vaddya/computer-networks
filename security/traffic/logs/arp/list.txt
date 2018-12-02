@@ -1,0 +1,3 @@
+vaddya@turing:~/Git/computer-security/traffic/logs/arp$ arp -a
+_gateway (192.168.1.1) at c4:6e:1f:0d:e5:e0 [ether] on wlp3s0
+
