@@ -2,22 +2,22 @@
 
 std::string response2string(Response response) {
     switch (response) {
-        case Response::OK:
+        case OK:
             return "ok";
-        case Response::ERROR:
+        case ERROR:
             return "error";
-        case Response::FILE_DATA:
-            return "file";
-        case Response::FILE_DATA_END:
-            return "eof";
-        case Response::NOT_DIRECTORY:
+        case NOT_DIRECTORY:
             return "not directory";
-        case Response::NOT_REGULAR_FILE:
+        case NOT_REGULAR_FILE:
             return "not regular file";
-        case Response::NOT_EXISTS:
+        case NOT_EXISTS:
             return "not exists";
-        case Response::ALREADY_EXISTS:
+        case ALREADY_EXISTS:
             return "already exists";
+        case FILE_DATA:
+            return "file";
+        case FILE_DATA_END:
+            return "eof";
         default:
             return "unknown";
     }

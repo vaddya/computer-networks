@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
             std::cout << client.pwd() << std::endl;
         } else if (command == "ls") {
             for (const auto &entity : client.ls()) {
-                std::cout << (entity.is_directory() ? "[d] " : "[-] ")
+                std::cout << (entity.isDirectory() ? "[d] " : "[-] ")
                           << entity.name() << std::endl;
             }
         } else if (command == "cd") {

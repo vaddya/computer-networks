@@ -6,21 +6,20 @@
 
 class FTPEntity {
 public:
-    FTPEntity(std::string name, bool is_directory) : _name(std::move(name)), _is_directory(is_directory) {}
+    FTPEntity(std::string name, bool isDirectory) : _name(std::move(name)), _isDirectory(isDirectory) {}
 
     std::string name() const {
         return _name;
     }
 
-    bool is_directory() const {
-        return _is_directory;
+    bool isDirectory() const {
+        return _isDirectory;
     }
 
 private:
     std::string _name;
 
-    bool _is_directory;
+    bool _isDirectory;
 };
-
 
 #endif //SIMPLEFTPONTCP_FTPENTITY_H
