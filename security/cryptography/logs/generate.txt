@@ -1,0 +1,53 @@
+vaddya@turing:~$ gpg --full-generate-key
+gpg (GnuPG) 2.2.4; Copyright (C) 2017 Free Software Foundation, Inc.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+gpg: directory '/home/vaddya/.gnupg' created
+gpg: keybox '/home/vaddya/.gnupg/pubring.kbx' created
+Please select what kind of key you want:
+   (1) RSA and RSA (default)
+   (2) DSA and Elgamal
+   (3) DSA (sign only)
+   (4) RSA (sign only)
+Your selection? 1
+RSA keys may be between 1024 and 4096 bits long.
+What keysize do you want? (3072) 2048
+Requested keysize is 2048 bits
+Please specify how long the key should be valid.
+         0 = key does not expire
+      <n>  = key expires in n days
+      <n>w = key expires in n weeks
+      <n>m = key expires in n months
+      <n>y = key expires in n years
+Key is valid for? (0) 6m
+Key expires at Mon 10 Jun 2019 10:06:45 PM MSK
+Is this correct? (y/N) y
+
+GnuPG needs to construct a user ID to identify your key.
+
+Real name: Vadim Dyachkov
+Email address: vadik.dyachkov@gmail.com
+Comment:
+You selected this USER-ID:
+    "Vadim Dyachkov <vadik.dyachkov@gmail.com>"
+
+Change (N)ame, (C)omment, (E)mail or (O)kay/(Q)uit? O
+We need to generate a lot of random bytes. It is a good idea to perform
+some other action (type on the keyboard, move the mouse, utilize the
+disks) during the prime generation; this gives the random number
+generator a better chance to gain enough entropy.
+We need to generate a lot of random bytes. It is a good idea to perform
+some other action (type on the keyboard, move the mouse, utilize the
+disks) during the prime generation; this gives the random number
+generator a better chance to gain enough entropy.
+gpg: /home/vaddya/.gnupg/trustdb.gpg: trustdb created
+gpg: key 6B2D2195069D1924 marked as ultimately trusted
+gpg: directory '/home/vaddya/.gnupg/openpgp-revocs.d' created
+gpg: revocation certificate stored as '/home/vaddya/.gnupg/openpgp-revocs.d/D8AAFDFBFB5DF7D77D8B78FD6B2D2195069D1924.rev'
+public and secret key created and signed.
+
+pub   rsa2048 2018-12-12 [SC] [expires: 2019-06-10]
+      D8AAFDFBFB5DF7D77D8B78FD6B2D2195069D1924
+uid                      Vadim Dyachkov <vadik.dyachkov@gmail.com>
+sub   rsa2048 2018-12-12 [E] [expires: 2019-06-10]

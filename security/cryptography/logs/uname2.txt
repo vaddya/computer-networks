@@ -1,0 +1,2 @@
+[vaddya@torvalds ~]$ uname -a
+Linux torvalds 4.19.6-1-MANJARO #1 SMP PREEMPT Sat Dec 1 12:21:26 UTC 2018 x86_64 GNU/Linux

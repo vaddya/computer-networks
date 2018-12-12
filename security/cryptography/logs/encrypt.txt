@@ -1,0 +1,24 @@
+[vaddya@torvalds Downloads]$ gpg --armor --output encrypted_message.txt.gpg --encrypt --recipient vadik.dyachkov@gmail.com encrypted_message.txt
+gpg: A84FB7A7A03E1B2A: There is no assurance this key belongs to the named user
+sub  rsa2048/A84FB7A7A03E1B2A 2018-12-12 Vadim Dyachkov <vadik.dyachkov@gmail.com>
+ Primary key fingerprint: D8AA FDFB FB5D F7D7 7D8B  78FD 6B2D 2195 069D 1924
+      Subkey fingerprint: 501E 6C15 1356 77BB BF24  ED7D A84F B7A7 A03E 1B2A
+
+It is NOT certain that the key belongs to the person named
+in the user ID.  If you *really* know what you are doing,
+you may answer the next question with yes.
+
+[vaddya@torvalds Downloads]$ cat encrypted_message.txt.gpg
+-----BEGIN PGP MESSAGE-----
+
+hQEMA6hPt6egPhsqAQf9G25SxkCaBKnKcZ3yuLjaeQf/7vLc/qXab6vjlERyFByy
+DFBOvR5fziGzL0KVqbFHb+FYBWKYmuJ+YxXqzjwkV0pIQIqeXOtoTvHuvM/jt0IG
+DsHbJ8fcy4ZyAUxz74I9EhpVqF41pzatvKAnDtMyYAI6BIoEFLqaod5hqvYvNPvF
+JK08obAqz5sf617k+JB4xGrRInjjWP0YdoMwAU0woFq1uM7CbD51fy88F61kZKDq
+NEGFceY+DX9+COcBpJq3oycaQDIXXRxGCGE2i2lKKsanNHEYWrQxnQ3XA3XqZkkq
+qT0BMiCKYPOo+sG2kREC/3g7lJ0cVmFt5XUQzXyToNJxAVHNuvhkgLTJcx2HWrHx
+5uK68k8rP1oaqmwE2YrTkG+TNWirmLS0pfF1muOMdM0/I09kyO6hr9cHar3/eLSz
+Y9kzhNsPvTlkpsUErguxDyXvGMIs1oWXgC04EXGqH7eji+WtfeUNYwNY9m1HZ7Zr
+dvQ=
+=6QhX
+-----END PGP MESSAGE-----

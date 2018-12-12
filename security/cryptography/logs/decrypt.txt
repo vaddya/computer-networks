@@ -1,0 +1,4 @@
+vaddya@turing:~$ gpg --decrypt encrypted_message.txt.gpg
+gpg: encrypted with 2048-bit RSA key, ID A84FB7A7A03E1B2A, created 2018-12-12
+      "Vadim Dyachkov <vadik.dyachkov@gmail.com>"
+This secret message is about to be encrypted!

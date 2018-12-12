@@ -1,0 +1,5 @@
+[vaddya@torvalds Downloads]$ gpg --import vadim.gpg
+gpg: /home/vaddya/.gnupg/trustdb.gpg: trustdb created
+gpg: key 6B2D2195069D1924: public key "Vadim Dyachkov <vadik.dyachkov@gmail.com>" imported
+gpg: Total number processed: 1
+gpg:               imported: 1

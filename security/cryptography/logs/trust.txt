@@ -1,0 +1,47 @@
+[vaddya@torvalds Downloads]$ gpg --edit-key vadik.dyachkov@gmail.com
+gpg (GnuPG) 2.2.11; Copyright (C) 2018 Free Software Foundation, Inc.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+
+gpg: checking the trustdb
+gpg: no ultimately trusted keys found
+pub  rsa2048/6B2D2195069D1924
+     created: 2018-12-12  expires: 2019-06-10  usage: SC
+     trust: undefined     validity: unknown
+sub  rsa2048/A84FB7A7A03E1B2A
+     created: 2018-12-12  expires: 2019-06-10  usage: E
+[ unknown] (1). Vadim Dyachkov <vadik.dyachkov@gmail.com>
+
+gpg> trust
+pub  rsa2048/6B2D2195069D1924
+     created: 2018-12-12  expires: 2019-06-10  usage: SC
+     trust: undefined     validity: unknown
+sub  rsa2048/A84FB7A7A03E1B2A
+     created: 2018-12-12  expires: 2019-06-10  usage: E
+[ unknown] (1). Vadim Dyachkov <vadik.dyachkov@gmail.com>
+
+Please decide how far you trust this user to correctly verify other users' keys
+(by looking at passports, checking fingerprints from different sources, etc.)
+
+  1 = I don't know or won't say
+  2 = I do NOT trust
+  3 = I trust marginally
+  4 = I trust fully
+  5 = I trust ultimately
+  m = back to the main menu
+
+Your decision? 5
+Do you really want to set this key to ultimate trust? (y/N) y
+
+pub  rsa2048/6B2D2195069D1924
+     created: 2018-12-12  expires: 2019-06-10  usage: SC
+     trust: ultimate      validity: unknown
+sub  rsa2048/A84FB7A7A03E1B2A
+     created: 2018-12-12  expires: 2019-06-10  usage: E
+[ unknown] (1). Vadim Dyachkov <vadik.dyachkov@gmail.com>
+Please note that the shown key validity is not necessarily correct
+unless you restart the program.
+
+gpg> quit
+[vaddya@torvalds Downloads]$

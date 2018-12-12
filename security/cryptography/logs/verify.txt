@@ -1,0 +1,13 @@
+[vaddya@torvalds Downloads]$ gpg --verify message.txt.sig message.txt
+gpg: Signature made Wed 12 Dec 2018 10:24:32 PM MSK
+gpg:                using RSA key D8AAFDFBFB5DF7D77D8B78FD6B2D2195069D1924
+gpg: checking the trustdb
+gpg: marginals needed: 3  completes needed: 1  trust model: pgp
+gpg: depth: 0  valid:   1  signed:   0  trust: 0-, 0q, 0n, 0m, 0f, 1u
+gpg: next trustdb check due at 2019-06-10
+gpg: Good signature from "Vadim Dyachkov <vadik.dyachkov@gmail.com>" [ultimate]
+[vaddya@torvalds Downloads]$ echo "Wrong content!" >> message.txt
+[vaddya@torvalds Downloads]$ gpg --verify message.txt.sig message.txt
+gpg: Signature made Wed 12 Dec 2018 10:24:32 PM MSK
+gpg:                using RSA key D8AAFDFBFB5DF7D77D8B78FD6B2D2195069D1924
+gpg: BAD signature from "Vadim Dyachkov <vadik.dyachkov@gmail.com>" [ultimate]
