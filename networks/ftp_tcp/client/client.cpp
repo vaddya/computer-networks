@@ -1,7 +1,7 @@
 #include "client.h"
 
 int main(int argc, char **argv) {
-    auto client = FTPClient();
+    auto client = FTPClientTCP();
 
     client.connect("localhost", PORT);
 

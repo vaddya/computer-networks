@@ -21,6 +21,6 @@ Supported commands:
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include "ftp_client.h"
+#include "ftp_client_tcp.h"
 
 #endif //SIMPLEFTPONTCP_FTP_CLIENT_H

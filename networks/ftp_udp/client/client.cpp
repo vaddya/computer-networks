@@ -1,7 +1,7 @@
 #include "client.h"
 
 int main(int argc, char **argv) {
-    auto client = FTPClient();
+    auto client = FTPClientUDP();
     client.connect("localhost", PORT);
 
     std::string command;
@@ -17,8 +17,8 @@ int main(int argc, char **argv) {
             std::string pwd = client.pwd();
             std::cout << "> " << pwd << std::endl;
         } else if (command == "ls") {
-            for (const auto &str : client.ls()) {
-                std::cout << "> " << str << std::endl;
+            for (const auto &entity : client.ls()) {
+                std::cout << "> " << entity.name() << std::endl;
             }
         } else if (command == "cd") {
             std::string path;

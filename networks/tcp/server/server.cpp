@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
     pthread_mutex_init(&clients_mutex, nullptr);
 
     pthread_t accept_thread_id;
-    pthread_create(&accept_thread_id, nullptr, &accept_thread, (void *) ss);
+    pthread_create(&accept_thread_id, nullptr, &acceptThread, (void *) ss);
 
     std::string command;
     std::cin >> command;
@@ -76,7 +76,7 @@ void kill_and_join_client(Client &c) {
     c.thread_id = nullptr;
 }
 
-void *client_thread(void *data) {
+void *clientThread(void *data) {
     auto cs = reinterpret_cast<int *>(data);
     char buf[BUFFER_SIZE + 1];
     buf[BUFFER_SIZE] = '\0';
@@ -94,7 +94,7 @@ void *client_thread(void *data) {
     }
 }
 
-void *accept_thread(void *data) {
+void *acceptThread(void *data) {
     auto ss = reinterpret_cast<int *>(data);
     while (true) {
         auto cs = new int;
@@ -104,7 +104,7 @@ void *accept_thread(void *data) {
             break;
         }
         auto thread_id = new pthread_t;
-        pthread_create(thread_id, nullptr, &client_thread, (void *) cs);
+        pthread_create(thread_id, nullptr, &clientThread, (void *) cs);
         pthread_mutex_lock(&clients_mutex);
         clients.push_back({cs, thread_id});
         pthread_mutex_unlock(&clients_mutex);

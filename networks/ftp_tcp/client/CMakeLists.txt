@@ -2,11 +2,10 @@ project(ftp_tcp_client)
 
 add_executable(${PROJECT_NAME}
         client.h client.cpp
-        ftp_client.h ftp_client.cpp
-        ftp_entity.h)
+        ftp_client_tcp.h ftp_client_tcp.cpp)
 
-target_link_libraries(${PROJECT_NAME} pthread stdc++fs ftp_utils ftp_tcp_utils)
+target_link_libraries(${PROJECT_NAME} pthread stdc++fs ftp_protocol ftp_tcp_utils)
 
-target_include_directories(${PROJECT_NAME} PUBLIC ../../ftp_utils)
+target_include_directories(${PROJECT_NAME} PUBLIC ../../ftp_protocol)
 
 target_include_directories(${PROJECT_NAME} PUBLIC ../utils)

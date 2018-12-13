@@ -8,13 +8,15 @@
 #include "request.h"
 #include "response.h"
 #include "socket_io.h"
+#include "ftp_entity.h"
+#include "ftp_client.h"
 
-class FTPClient {
+class FTPClientUDP : FTPClient {
 
 public:
-    FTPClient();
+    FTPClientUDP();
 
-    ~FTPClient();
+    virtual ~FTPClientUDP();
 
     void connect(const std::string &server_addr, int port);
 
@@ -22,7 +24,7 @@ public:
 
     std::string pwd();
 
-    std::vector<std::string> ls();
+    std::vector<FTPEntity> ls();
 
     void cd(const std::string &string);
 

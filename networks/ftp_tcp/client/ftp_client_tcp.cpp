@@ -1,14 +1,14 @@
-#include "ftp_client.h"
+#include "ftp_client_tcp.h"
 
-FTPClient::FTPClient() {
+FTPClientTCP::FTPClientTCP() {
     s = 0;
 }
 
-FTPClient::~FTPClient() {
+FTPClientTCP::~FTPClientTCP() {
     disconnect();
 }
 
-void FTPClient::connect(const std::string &server_addr, int port) {
+void FTPClientTCP::connect(const std::string &server_addr, int port) {
     disconnect();
     sockaddr_in peer{};
     peer.sin_family = AF_INET;
@@ -33,7 +33,7 @@ void FTPClient::connect(const std::string &server_addr, int port) {
     io = new SocketIO(s);
 }
 
-void FTPClient::disconnect() {
+void FTPClientTCP::disconnect() {
     if (io) {
         io->sendRequest(Request::DISCONNECT);
         delete io;
@@ -46,7 +46,7 @@ void FTPClient::disconnect() {
     }
 }
 
-std::string FTPClient::pwd() {
+std::string FTPClientTCP::pwd() {
     validate();
     io->sendRequest(Request::PWD);
     auto response = io->getResponse();
@@ -57,7 +57,7 @@ std::string FTPClient::pwd() {
     return io->getString();
 }
 
-std::vector<FTPEntity> FTPClient::ls() {
+std::vector<FTPEntity> FTPClientTCP::ls() {
     validate();
     io->sendRequest(Request::LS);
     auto response = io->getResponse();
@@ -75,7 +75,7 @@ std::vector<FTPEntity> FTPClient::ls() {
     return entities;
 }
 
-void FTPClient::cd(const std::string &path) {
+void FTPClientTCP::cd(const std::string &path) {
     validate();
     io->sendRequest(Request::CD);
     io->sendString(path);
@@ -87,7 +87,7 @@ void FTPClient::cd(const std::string &path) {
     }
 }
 
-void FTPClient::get(const std::string &file_name) {
+void FTPClientTCP::get(const std::string &file_name) {
     validate();
     io->sendRequest(Request::GET);
     io->sendString(file_name);
@@ -102,7 +102,7 @@ void FTPClient::get(const std::string &file_name) {
     io->getFile(file);
 }
 
-void FTPClient::put(const std::string &file_name) {
+void FTPClientTCP::put(const std::string &file_name) {
     validate();
     io->sendRequest(Request::PUT);
     io->sendString(file_name);
@@ -117,7 +117,7 @@ void FTPClient::put(const std::string &file_name) {
     }
 }
 
-void FTPClient::validate() {
+void FTPClientTCP::validate() {
     if (s <= 0 || !io) {
         throw std::runtime_error("socket is closed");
     }

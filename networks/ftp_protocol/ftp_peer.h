@@ -1,15 +1,15 @@
 #ifndef SIMPLEFTPONUDP_PEER_H
 #define SIMPLEFTPONUDP_PEER_H
 
-class Peer {
+class FTPPeer {
 
 public:
-    explicit Peer(const sockaddr_in &peer) {
+    explicit FTPPeer(const sockaddr_in &peer) {
         ip = inet_ntoa(peer.sin_addr);
         port = ntohs(peer.sin_port);
     }
 
-    bool operator<(const Peer &rhs) const {
+    bool operator<(const FTPPeer &rhs) const {
         return ip == rhs.ip ? port < rhs.port
                             : ip < rhs.ip;
     }
@@ -18,7 +18,7 @@ public:
         return ip + ":" + std::to_string(port);
     }
 
-    bool equals(const Peer &rhs) const {
+    bool equals(const FTPPeer &rhs) const {
         return (ip == rhs.ip) && (port == rhs.port);
     }
 

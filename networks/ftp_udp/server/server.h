@@ -7,8 +7,8 @@
 #include <unistd.h>
 #include <netinet/in.h>
 #include <map>
-#include "ftp_server.h"
-#include "peer.h"
+#include "ftp_server_udp.h"
+#include "ftp_peer.h"
 
 const char *SERVER_HELP = R"(
 Supported commands:
@@ -19,8 +19,8 @@ Supported commands:
 
 pthread_rwlock_t lock = PTHREAD_RWLOCK_INITIALIZER;
 
-std::map<Peer, FTPServer *> servers;
+std::map<FTPPeer, FTPServerUDP *> servers;
 
-void *proc_thread(void *data);
+void *processingThread(void *data);
 
 #endif //SIMPLEFTPONUDP_FTP_SERVER_H

@@ -6,7 +6,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <netinet/in.h>
-#include "ftp_server.h"
+#include "ftp_server_tcp.h"
 
 const int PORT = 7000;
 
@@ -20,7 +20,7 @@ Supported commands:
 /**
  * Global vector of clients
  */
-std::vector<FTPServer *> servers;
+std::vector<FTPServerTCP *> servers;
 
 /**
  * Global mutex to safe access vector of servers
@@ -31,12 +31,12 @@ pthread_rwlock_t lock = PTHREAD_RWLOCK_INITIALIZER;
  * Client thread
  * @param data - client socket
  */
-void *client_thread(void *data);
+void *clientThread(void *data);
 
 /**
  * Thread to accept connections
  * @param data - server socket
  */
-void *accept_thread(void *data);
+void *acceptThread(void *data);
 
 #endif //SIMPLEFTPONTCP_FTP_SERVER_H

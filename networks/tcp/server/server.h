@@ -40,12 +40,12 @@ void kill_and_join_client(Client &c);
  * Client thread
  * @param data - client socket
  */
-void *client_thread(void *data);
+void *clientThread(void *data);
 
 /**
  * Thread to accept connections
  * @param data - server socket
  */
-void *accept_thread(void *data);
+void *acceptThread(void *data);
 
 #endif //SIMPLECLIENTSERVER_SERVER_H

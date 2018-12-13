@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
     pthread_rwlock_init(&lock, nullptr);
 
     pthread_t accept_thread_id;
-    pthread_create(&accept_thread_id, nullptr, &accept_thread, (void *) ss);
+    pthread_create(&accept_thread_id, nullptr, &acceptThread, (void *) ss);
 
     std::string command;
     std::cin >> command;
@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
             pthread_rwlock_rdlock(&lock);
             std::cout << "Total " << servers.size() << " clients" << std::endl;
             for (int i = 0; i < servers.size(); i++) {
-                std::cout << i << ": " << servers[i]->to_string() << std::endl;
+                std::cout << i << ": " << servers[i]->toString() << std::endl;
             }
             pthread_rwlock_unlock(&lock);
         } else if (command == "kill") {
@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
             std::cin >> i;
             pthread_rwlock_wrlock(&lock);
             if (i >= 0 && i < servers.size()) {
-                servers[i]->close_socket();
+                servers[i]->disconnect();
             } else {
                 std::cerr << "Wrong client index" << std::endl;
             }
@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
     }
     pthread_rwlock_wrlock(&lock);
     for (auto s : servers) {
-        s->close_socket();
+        s->disconnect();
     }
     pthread_rwlock_unlock(&lock);
     shutdown(*ss, SHUT_RDWR);
@@ -68,10 +68,29 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-void *client_thread(void *data) {
-    auto server = reinterpret_cast<FTPServer *>(data);
+void *acceptThread(void *data) {
+    auto ss = reinterpret_cast<int *>(data);
+    while (true) {
+        auto cs = accept(*ss, nullptr, nullptr);
+        if (cs < 0) {
+            std::cerr << "Cannot accept connection" << std::endl;
+            break;
+        }
+        auto thread_id = new pthread_t;
+        auto server = new FTPServerTCP(cs, thread_id);
+        pthread_create(thread_id, nullptr, &clientThread, (void *) server);
+        pthread_rwlock_wrlock(&lock);
+        servers.push_back(server);
+        pthread_rwlock_unlock(&lock);
+        std::cout << "Joined client with socket " << cs << std::endl;
+    }
+    std::cout << "Stopped accepting connections" << std::endl;
+}
+
+void *clientThread(void *data) {
+    auto server = reinterpret_cast<FTPServerTCP *>(data);
     try {
-        server->process_requests();
+        server->processRequests();
     } catch (std::exception &e) {
         std::cerr << "Got exception " << e.what() << std::endl;
     }
@@ -84,23 +103,4 @@ void *client_thread(void *data) {
         }
     }
     pthread_rwlock_unlock(&lock);
-}
-
-void *accept_thread(void *data) {
-    auto ss = reinterpret_cast<int *>(data);
-    while (true) {
-        auto cs = accept(*ss, nullptr, nullptr);
-        if (cs < 0) {
-            std::cerr << "Cannot accept connection" << std::endl;
-            break;
-        }
-        auto thread_id = new pthread_t;
-        auto server = new FTPServer(cs, thread_id);
-        pthread_create(thread_id, nullptr, &client_thread, (void *) server);
-        pthread_rwlock_wrlock(&lock);
-        servers.push_back(server);
-        pthread_rwlock_unlock(&lock);
-        std::cout << "Joined client with socket " << cs << std::endl;
-    }
-    std::cout << "Stopped accepting connections" << std::endl;
 }

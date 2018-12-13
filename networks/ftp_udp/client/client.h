@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include "ftp_client.h"
+#include "ftp_client_udp.h"
 
 const int PORT = 7000;
 

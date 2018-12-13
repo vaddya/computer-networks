@@ -6,4 +6,6 @@ set(FTP_TCP_UTILS_SRC
 
 add_library(${PROJECT_NAME} STATIC ${FTP_TCP_UTILS_SRC})
 
-target_include_directories(${PROJECT_NAME} PUBLIC ../../ftp_utils)
+target_include_directories(${PROJECT_NAME} PUBLIC ../../ftp_protocol)
+
+target_link_libraries(${PROJECT_NAME} ftp_protocol)

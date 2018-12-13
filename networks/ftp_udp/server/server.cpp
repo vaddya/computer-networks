@@ -23,8 +23,8 @@ int main(int argc, char **argv) {
 
     pthread_rwlock_init(&lock, nullptr);
 
-    pthread_t proc_thread_id;
-    pthread_create(&proc_thread_id, nullptr, &proc_thread, (void *) &s);
+    pthread_t processing_thread_id;
+    pthread_create(&processing_thread_id, nullptr, &processingThread, (void *) &s);
 
     std::string command;
     std::cin >> command;
@@ -43,6 +43,7 @@ int main(int argc, char **argv) {
             auto it = servers.begin();
             while (it != servers.end()) {
                 if (it->first.toString() == str) {
+                    it->second->disconnect();
                     delete it->second;
                     servers.erase(it);
                     break;
@@ -57,28 +58,28 @@ int main(int argc, char **argv) {
     }
     shutdown(s, SHUT_RDWR);
     close(s);
-    pthread_join(proc_thread_id, nullptr);
+    pthread_join(processing_thread_id, nullptr);
     pthread_rwlock_destroy(&lock);
     return 0;
 }
 
-void *proc_thread(void *data) {
+void *processingThread(void *data) {
     auto s = reinterpret_cast<int *>(data);
     auto io = new SocketIO(*s);
     sockaddr_in from{};
     socklen_t from_size = sizeof from;
     Package req = io->receive(reinterpret_cast<sockaddr *>(&from), &from_size);
     while (req.getType() != PackageType::EMPTY) {
-        Peer peer(from);
+        FTPPeer peer(from);
         if (servers.find(peer) == servers.end()) {
             pthread_rwlock_rdlock(&lock);
-            servers[peer] = new FTPServer(io, from, from_size);
+            servers[peer] = new FTPServerUDP(io, from, from_size);
             pthread_rwlock_unlock(&lock);
             std::cout << "Client joined: " << peer.toString() << std::endl;
         }
         std::cout << "Received package " << req.toString() << " from " << peer.toString() << std::endl;
         pthread_rwlock_rdlock(&lock);
-        servers[peer]->process_request(req);
+        servers[peer]->processRequest(req);
         pthread_rwlock_unlock(&lock);
         if (req.getType() == PackageType::REQUEST && req.getRequest() == Request::DISCONNECT &&
             servers.find(peer) != servers.end()) {

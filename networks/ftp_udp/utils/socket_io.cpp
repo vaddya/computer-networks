@@ -16,9 +16,11 @@ ssize_t SocketIO::sendTo(sockaddr_in peer, Package req) {
     size_t size = req.fillBuffer(out_buffer, UDP_MAX_SIZE);
     fd_set set;
     timeval timeout{};
-    while (true) {
+    int retry = 5;
+    while (retry > 0) {
         std::cout << "Sending package " << req.toString() << std::endl;
         auto ns = sendto(this->s, out_buffer, size, 0, (sockaddr *) &peer, sizeof peer);
+        retry--;
         if (ns < 0) {
             throw std::runtime_error("Cannot send in socket: " + std::to_string(s));
         }
@@ -61,6 +63,9 @@ ssize_t SocketIO::sendTo(sockaddr_in peer, Package req) {
                       << req.getCounter() + 1 << std::endl;
         }
     }
+    if (retry == 0) {
+        throw std::runtime_error("Cannot send request: " + req.toString());
+    }
 }
 
 size_t SocketIO::sendFile(sockaddr_in peer, size_t counter, std::ifstream &file) {
@@ -94,11 +99,11 @@ Package SocketIO::receive(sockaddr *from, socklen_t *from_size) {
 }
 
 Package SocketIO::receiveFrom(sockaddr_in peer) {
-    Peer peerExpected(peer);
+    FTPPeer peerExpected(peer);
     sockaddr_in from{};
     socklen_t from_size = sizeof from;
     Package pack = receive(reinterpret_cast<sockaddr *>(&from), &from_size);
-    Peer peerFrom(from);
+    FTPPeer peerFrom(from);
     if (peerExpected.equals(peerFrom)) {
         std::cout << "Received package " << pack.toString() << " from " << peerFrom.toString() << std::endl;
         return pack;

@@ -1,11 +1,18 @@
-#include "ftp_server.h"
+#include "ftp_server_udp.h"
 
-FTPServer::FTPServer(SocketIO *io, sockaddr_in peer, socklen_t peer_size) : io(io), peer(peer), peer_size(peer_size) {
+FTPServerUDP::FTPServerUDP(SocketIO *io, sockaddr_in peer, socklen_t peer_size) : io(io), peer(peer), peer_size(peer_size) {
     path = std::string(SERVER_PATH);
     counter = 0;
 }
 
-void FTPServer::process_request(const Package &req) {
+FTPServerUDP::~FTPServerUDP() {
+    disconnect();
+}
+
+void FTPServerUDP::processRequest(const Package &req) {
+//    if (req.getCounter() == 4) { // oops
+//        return;
+//    }
     if (req.getCounter() != counter) {
         std::cerr << "Wrong package indexes: " << req.getCounter() << " instead of " << counter << std::endl;
         io->sendTo(peer, Package::response(counter, Response::ERROR));
@@ -15,27 +22,28 @@ void FTPServer::process_request(const Package &req) {
     counter += 1; // usr msg
     io->sendTo(peer, Package::ack(counter, req.getCounter()));
     counter += 1; // our ack
-
+    this->req = &req;
     switch (req.getRequest()) {
         case Request::CONNECT:
-            connect(req);
+            connect();
             break;
         case Request::PWD:
-            pwd(req);
+            pwd();
             break;
         case Request::LS:
-            ls(req);
+            ls();
             break;
         case Request::CD:
-            cd(req);
+            cd();
             break;
         case Request::GET:
-            get(req);
+            get();
             break;
         case Request::PUT:
-            put(req);
+            put();
             break;
         case Request::DISCONNECT:
+            disconnect();
             break;
         default:
             std::cerr << "Unknown request: " << req.getRequest() << std::endl;
@@ -43,17 +51,17 @@ void FTPServer::process_request(const Package &req) {
     }
 }
 
-void FTPServer::connect(const Package &req) {
+void FTPServerUDP::connect() {
     io->sendTo(peer, Package::response(counter, Response::OK));
     counter += 2; // our msg + usr ack
 }
 
-void FTPServer::pwd(const Package &req) {
+void FTPServerUDP::pwd() {
     io->sendTo(peer, Package::response(counter, Response::OK, path.c_str(), path.string().size()));
     counter += 2; // our msg + usr ack
 }
 
-void FTPServer::ls(const Package &req) {
+void FTPServerUDP::ls() {
     std::vector<std::string> list;
     for (auto &p : fs::directory_iterator(path)) {
         list.push_back(p.path().filename());
@@ -62,8 +70,8 @@ void FTPServer::ls(const Package &req) {
     counter += 2; // our msg + usr ack
 }
 
-void FTPServer::cd(const Package &req) {
-    fs::path attempt = path / req.extractString();
+void FTPServerUDP::cd() {
+    fs::path attempt = path / req->extractString();
     if (!fs::exists(attempt)) {
         io->sendTo(peer, Package::response(counter, Response::NOT_EXISTS));
         counter += 2; // our msg + usr ack
@@ -77,8 +85,8 @@ void FTPServer::cd(const Package &req) {
     }
 }
 
-void FTPServer::get(const Package &req) {
-    fs::path attempt = path / req.extractString();
+void FTPServerUDP::get() {
+    fs::path attempt = path / req->extractString();
     if (!fs::exists(attempt)) {
         io->sendTo(peer, Package::response(counter, Response::NOT_EXISTS));
         counter += 2; // our msg + usr ack
@@ -95,8 +103,8 @@ void FTPServer::get(const Package &req) {
     }
 }
 
-void FTPServer::put(const Package &req) {
-    fs::path attempt = path / req.extractString();
+void FTPServerUDP::put() {
+    fs::path attempt = path / req->extractString();
     if (fs::exists(attempt)) {
         io->sendTo(peer, Package::response(counter, Response::ALREADY_EXISTS));
         counter += 2; // our msg + usr ack
@@ -107,4 +115,8 @@ void FTPServer::put(const Package &req) {
         counter = io->receiveFile(peer, counter, file);
         counter += 2;
     }
+}
+
+void FTPServerUDP::disconnect() {
+
 }

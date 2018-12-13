@@ -1,18 +1,17 @@
-#include "ftp_server.h"
+#include "ftp_server_tcp.h"
 
-FTPServer::FTPServer(int socket, pthread_t *thread) {
+FTPServerTCP::FTPServerTCP(int socket, pthread_t *thread) {
     socket_id = socket;
     thread_id = thread;
     path = std::string(SERVER_PATH);
     io = new SocketIO(socket_id);
 }
 
-FTPServer::~FTPServer() {
-    delete thread_id;
-    delete io;
+FTPServerTCP::~FTPServerTCP() {
+    disconnect();
 }
 
-void FTPServer::process_requests() {
+void FTPServerTCP::processRequests() {
     while (true) {
         auto request = io->getRequest();
         std::cout << "Got request <" << request2string(request) << "> from socket " << socket_id << std::endl;
@@ -41,21 +40,16 @@ void FTPServer::process_requests() {
     }
 }
 
-void FTPServer::close_socket() {
-    shutdown(socket_id, SHUT_RDWR);
-    close(socket_id);
+void FTPServerTCP::connect() {
+
 }
 
-void FTPServer::join() {
-    pthread_join(*thread_id, nullptr);
-}
-
-void FTPServer::pwd() {
+void FTPServerTCP::pwd() {
     io->sendResponse(Response::OK);
     io->sendString(path.c_str());
 }
 
-void FTPServer::ls() {
+void FTPServerTCP::ls() {
     io->sendResponse(Response::OK);
     size_t size = static_cast<size_t>(std::distance(
             fs::directory_iterator(path), fs::directory_iterator())
@@ -68,7 +62,7 @@ void FTPServer::ls() {
     }
 }
 
-void FTPServer::cd() {
+void FTPServerTCP::cd() {
     fs::path attempt = path / io->getString();
     if (!fs::exists(attempt)) {
         io->sendResponse(Response::NOT_EXISTS);
@@ -80,7 +74,7 @@ void FTPServer::cd() {
     }
 }
 
-void FTPServer::get() {
+void FTPServerTCP::get() {
     fs::path attempt = path / io->getString();
     if (!fs::exists(attempt)) {
         io->sendResponse(Response::NOT_EXISTS);
@@ -94,7 +88,7 @@ void FTPServer::get() {
     }
 }
 
-void FTPServer::put() {
+void FTPServerTCP::put() {
     fs::path attempt = path / io->getString();
     if (fs::exists(attempt)) {
         io->sendResponse(Response::ALREADY_EXISTS);
@@ -105,7 +99,14 @@ void FTPServer::put() {
     }
 }
 
-std::string FTPServer::to_string() {
+void FTPServerTCP::disconnect() {
+    shutdown(socket_id, SHUT_RDWR);
+    close(socket_id);
+    delete thread_id;
+    delete io;
+}
+
+std::string FTPServerTCP::toString() {
     return std::string("[") + std::to_string(socket_id) + ", " + std::to_string(*thread_id) + "]";
 }
 

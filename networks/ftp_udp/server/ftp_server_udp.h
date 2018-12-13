@@ -9,29 +9,34 @@
 #include "request.h"
 #include "response.h"
 #include "socket_io.h"
+#include "ftp_server.h"
 
 namespace fs = std::experimental::filesystem;
 
-class FTPServer {
+class FTPServerUDP : FTPServer {
 
 public:
-    FTPServer(SocketIO *io, sockaddr_in peer, socklen_t peer_size);
+    FTPServerUDP(SocketIO *io, sockaddr_in peer, socklen_t peer_size);
 
-    void process_request(const Package &req);
+    virtual ~FTPServerUDP();
+
+    void processRequest(const Package &req);
+
+    void connect() override;
+
+    void pwd() override;
+
+    void ls() override;
+
+    void cd() override;
+
+    void get() override;
+
+    void put() override;
+
+    void disconnect() override;
 
 private:
-    void connect(const Package &req);
-
-    void pwd(const Package &req);
-
-    void ls(const Package &req);
-
-    void cd(const Package &req);
-
-    void get(const Package &req);
-
-    void put(const Package &req);
-
     const std::string SERVER_PATH = "/home/vaddya/FTP/Server/";
 
     size_t counter;
@@ -39,6 +44,7 @@ private:
     socklen_t peer_size;
     SocketIO *io;
     fs::path path;
+    const Package *req;
 };
 
 #endif //SIMPLEFTPONUDP_FTPSERVER_H

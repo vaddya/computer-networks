@@ -8,33 +8,34 @@
 #include <experimental/filesystem>
 #include "response.h"
 #include "socket_io.h"
+#include "ftp_server.h"
 
 namespace fs = std::experimental::filesystem;
 
-class FTPServer {
+class FTPServerTCP : FTPServer {
 
 public:
-    FTPServer(int socket, pthread_t *thread);
+    FTPServerTCP(int socket, pthread_t *thread);
 
-    ~FTPServer();
+    virtual ~FTPServerTCP();
 
-    void process_requests();
+    void processRequests();
 
-    void close_socket();
+    void connect() override;
 
-    void join();
+    void pwd() override;
 
-    void pwd();
+    void ls() override;
 
-    void ls();
+    void cd() override;
 
-    void cd();
+    void get() override;
 
-    void get();
+    void put() override;
 
-    void put();
+    void disconnect() override;
 
-    std::string to_string();
+    std::string toString();
 
 private:
     const std::string SERVER_PATH = "/home/vaddya/FTP/Server/";

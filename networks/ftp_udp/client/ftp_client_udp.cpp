@@ -1,15 +1,15 @@
-#include "ftp_client.h"
+#include "ftp_client_udp.h"
 
-FTPClient::FTPClient() {
+FTPClientUDP::FTPClientUDP() {
     s = 0;
     io = nullptr;
 }
 
-FTPClient::~FTPClient() {
+FTPClientUDP::~FTPClientUDP() {
     disconnect();
 }
 
-void FTPClient::connect(const std::string &server_addr, int port) {
+void FTPClientUDP::connect(const std::string &server_addr, int port) {
     disconnect();
     counter = 0;
     peer.sin_family = AF_INET;
@@ -39,10 +39,10 @@ void FTPClient::connect(const std::string &server_addr, int port) {
     if (resp.getResponse() != Response::OK) {
         std::cerr << "connect failed: " << response2string(resp.getResponse());
     }
-    std::cout << "done" << std::endl;
+    std::cout << "connection done" << std::endl;
 }
 
-void FTPClient::disconnect() {
+void FTPClientUDP::disconnect() {
     if (io) {
         io->sendTo(peer, Package::request(counter, Request::DISCONNECT));
         delete io;
@@ -55,7 +55,7 @@ void FTPClient::disconnect() {
     }
 }
 
-std::string FTPClient::pwd() {
+std::string FTPClientUDP::pwd() {
     validate();
 //    counter += 100; // oops
     io->sendTo(peer, Package::request(counter, Request::PWD));
@@ -70,22 +70,26 @@ std::string FTPClient::pwd() {
     return resp.extractString();
 }
 
-std::vector<std::string> FTPClient::ls() {
+std::vector<FTPEntity> FTPClientUDP::ls() {
     validate();
     io->sendTo(peer, Package::request(counter, Request::LS));
     Package resp = io->receiveFrom(peer);
     counter += 3; // our msg + srv ack + srv resp
     io->sendTo(peer, Package::ack(counter, resp.getCounter()));
     counter += 1; // our ack
-    std::vector<std::string> entities;
+    std::vector<FTPEntity> entities;
     if (resp.getResponse() != Response::OK) {
         std::cerr << "ls failed: " << response2string(resp.getResponse()) << std::endl;
         return entities;
     }
-    return resp.extractList();
+    std::vector<std::string> list = resp.extractList();
+    for (auto &s : list) {
+        entities.emplace_back(s, false);
+    }
+    return entities;
 }
 
-void FTPClient::cd(const std::string &path) {
+void FTPClientUDP::cd(const std::string &path) {
     validate();
     io->sendTo(peer, Package::request(counter, Request::CD, path.c_str(), path.size() + 1));
     Package resp = io->receiveFrom(peer);
@@ -101,7 +105,7 @@ void FTPClient::cd(const std::string &path) {
     }
 }
 
-void FTPClient::get(const std::string &file_name) {
+void FTPClientUDP::get(const std::string &file_name) {
     validate();
     io->sendTo(peer, Package::request(counter, Request::GET, file_name.c_str(), file_name.size()));
     Package resp = io->receiveFrom(peer);
@@ -117,7 +121,7 @@ void FTPClient::get(const std::string &file_name) {
     std::cout << "done" << std::endl;
 }
 
-void FTPClient::put(const std::string &file_name) {
+void FTPClientUDP::put(const std::string &file_name) {
     validate();
     io->sendTo(peer, Package::request(counter, Request::PUT, file_name.c_str(), file_name.size()));
     Package resp = io->receiveFrom(peer);
@@ -133,7 +137,7 @@ void FTPClient::put(const std::string &file_name) {
     std::cout << "done" << std::endl;
 }
 
-void FTPClient::validate() {
+void FTPClientUDP::validate() {
     if (s <= 0 || !io) {
         throw std::runtime_error("socket is closed");
     }

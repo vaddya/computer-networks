@@ -9,56 +9,27 @@
 #include "response.h"
 #include "socket_io.h"
 #include "ftp_entity.h"
+#include "ftp_client.h"
 
-class FTPClient {
+class FTPClientTCP : FTPClient {
 
 public:
-    FTPClient();
+    FTPClientTCP();
 
-    ~FTPClient();
+    virtual ~FTPClientTCP();
 
-    /**
-     * Connects to server
-     * @param server_addr
-     * @param port
-     */
     void connect(const std::string &server_addr, int port);
 
-    /**
-     * Disconnects from current server
-     */
     void disconnect();
 
-    /**
-     * Get current working directory
-     * @return directory
-     */
     std::string pwd();
 
-    /**
-     * List files and folders in current directory
-     * @return list of files and folders
-     */
     std::vector<FTPEntity> ls();
 
-    /**
-     * Change current directory
-     * @param path
-     */
     void cd(const std::string &string);
 
-    /**
-     * Download file from server
-     * @param file_name
-     * @param dst
-     */
     void get(const std::string &file_name);
 
-    /**
-     * Upload file to server
-     * @param file_name
-     * @param src
-     */
     void put(const std::string &file_name);
 
 private:
@@ -66,7 +37,7 @@ private:
 
     int s;
 
-    SocketIO *io;
+    SocketIO *io = nullptr;
 
     void validate();
 };

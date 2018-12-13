@@ -13,7 +13,7 @@
 #include "response.h"
 #include "package_type.h"
 #include "package.h"
-#include "peer.h"
+#include "ftp_peer.h"
 
 class SocketIO {
 
