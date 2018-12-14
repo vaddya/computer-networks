@@ -1,5 +1,5 @@
-#ifndef SIMPLEFTPONTCP_CLIENT_H
-#define SIMPLEFTPONTCP_CLIENT_H
+#ifndef FTP_TCP_FTP_CLIENT_TCP_H
+#define FTP_TCP_FTP_CLIENT_TCP_H
 
 #include <unistd.h>
 #include <string>
@@ -42,4 +42,4 @@ private:
     void validate();
 };
 
-#endif //SIMPLEFTPONTCP_CLIENT_H
+#endif //FTP_TCP_FTP_CLIENT_TCP_H

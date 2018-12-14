@@ -1,5 +1,5 @@
-#ifndef SIMPLEFTPONTCP_FTPENTITY_H
-#define SIMPLEFTPONTCP_FTPENTITY_H
+#ifndef FTP_PROTOCOL_FTP_ENTITY_H
+#define FTP_PROTOCOL_FTP_ENTITY_H
 
 #include <string>
 #include <utility>
@@ -22,4 +22,4 @@ private:
     bool _isDirectory;
 };
 
-#endif //SIMPLEFTPONTCP_FTPENTITY_H
+#endif //FTP_PROTOCOL_FTP_ENTITY_H

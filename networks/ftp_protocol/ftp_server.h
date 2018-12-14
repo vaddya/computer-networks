@@ -1,5 +1,5 @@
-#ifndef NETWORKS_I_FTP_SERVER_H
-#define NETWORKS_I_FTP_SERVER_H
+#ifndef FTP_PROTOCOL_FTP_SERVER_H
+#define FTP_PROTOCOL_FTP_SERVER_H
 
 class FTPServer {
 public:
@@ -41,4 +41,4 @@ public:
 
 };
 
-#endif //NETWORKS_I_FTP_SERVER_H
+#endif //FTP_PROTOCOL_FTP_SERVER_H

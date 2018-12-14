@@ -1,5 +1,5 @@
-#ifndef SIMPLECLIENTSERVER_SERVER_H
-#define SIMPLECLIENTSERVER_SERVER_H
+#ifndef UDP_SERVER_H
+#define UDP_SERVER_H
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -12,4 +12,4 @@ const int PORT = 7000;
 
 const int BUFFER_SIZE = 65507;
 
-#endif //SIMPLECLIENTSERVER_SERVER_H
+#endif //UDP_SERVER_H

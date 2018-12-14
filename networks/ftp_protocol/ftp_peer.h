@@ -1,5 +1,5 @@
-#ifndef SIMPLEFTPONUDP_PEER_H
-#define SIMPLEFTPONUDP_PEER_H
+#ifndef FTP_PROTOCOL_FTP_PEER_H
+#define FTP_PROTOCOL_FTP_PEER_H
 
 class FTPPeer {
 
@@ -27,4 +27,4 @@ private:
     int port;
 };
 
-#endif //SIMPLEFTPONUDP_PEER_H
+#endif //FTP_PROTOCOL_FTP_PEER_H

@@ -1,5 +1,5 @@
-#ifndef SIMPLEFTPONUDP_CLIENT_H
-#define SIMPLEFTPONUDP_CLIENT_H
+#ifndef FTP_UDP_FPT_CLIENT_UDP_H
+#define FTP_UDP_FPT_CLIENT_UDP_H
 
 #include <unistd.h>
 #include <string>
@@ -44,4 +44,4 @@ private:
     void validate();
 };
 
-#endif //SIMPLEFTPONUDP_CLIENT_H
+#endif //FTP_UDP_FPT_CLIENT_UDP_H

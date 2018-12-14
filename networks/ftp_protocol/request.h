@@ -1,5 +1,5 @@
-#ifndef SIMPLEFTPONUDP_REQUEST_H
-#define SIMPLEFTPONUDP_REQUEST_H
+#ifndef FTP_PROTOCOL_REQUEST_H
+#define FTP_PROTOCOL_REQUEST_H
 
 #include <string>
 
@@ -15,4 +15,4 @@ enum Request : unsigned char {
 
 std::string request2string(Request request);
 
-#endif //SIMPLEFTPONUDP_REQUEST_H
+#endif //FTP_PROTOCOL_REQUEST_H

@@ -10,9 +10,9 @@ FTPServerUDP::~FTPServerUDP() {
 }
 
 void FTPServerUDP::processRequest(const Package &req) {
-    if (req.getCounter() == 4) { // oops
-        return;
-    }
+//    if (req.getCounter() == 4) { // oops: no ack for client
+//        return;
+//    }
     if (req.getCounter() != counter) {
         std::cerr << "Wrong package indexes: " << req.getCounter() << " instead of " << counter << std::endl;
         io->sendTo(peer, Package::response(counter, Response::ERROR));

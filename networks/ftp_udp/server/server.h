@@ -1,5 +1,5 @@
-#ifndef SIMPLEFTPONUDP_FTP_SERVER_H
-#define SIMPLEFTPONUDP_FTP_SERVER_H
+#ifndef FTP_UDP_SERVER_H
+#define FTP_UDP_SERVER_H
 
 #include <pthread.h>
 #include <sys/types.h>
@@ -23,4 +23,4 @@ std::map<FTPPeer, FTPServerUDP *> servers;
 
 void *processingThread(void *data);
 
-#endif //SIMPLEFTPONUDP_FTP_SERVER_H
+#endif //FTP_UDP_SERVER_H

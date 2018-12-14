@@ -1,5 +1,5 @@
-#ifndef SIMPLEFTPONTCP_RESPONSE_H
-#define SIMPLEFTPONTCP_RESPONSE_H
+#ifndef FTP_PROTOCOL_RESPONSE_H
+#define FTP_PROTOCOL_RESPONSE_H
 
 #include <string>
 
@@ -16,4 +16,4 @@ enum Response : unsigned char {
 
 std::string response2string(Response response);
 
-#endif //SIMPLEFTPONTCP_RESPONSE_H
+#endif //FTP_PROTOCOL_RESPONSE_H

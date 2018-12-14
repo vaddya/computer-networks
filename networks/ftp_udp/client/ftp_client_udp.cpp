@@ -57,7 +57,7 @@ void FTPClientUDP::disconnect() {
 
 std::string FTPClientUDP::pwd() {
     validate();
-//    counter += 100; // oops
+//    counter += 100; // oops: wrong package counter
     io->sendTo(peer, Package::request(counter, Request::PWD));
     Package resp = io->receiveFrom(peer);
     counter += 3; // our msg + srv ack + srv resp

@@ -1,5 +1,5 @@
-#ifndef SIMPLEFTPONTCP_FTP_SERVER_H
-#define SIMPLEFTPONTCP_FTP_SERVER_H
+#ifndef FTP_TCP_SERVER_H
+#define FTP_TCP_SERVER_H
 
 #include <pthread.h>
 #include <sys/types.h>
@@ -39,4 +39,4 @@ void *clientThread(void *data);
  */
 void *acceptThread(void *data);
 
-#endif //SIMPLEFTPONTCP_FTP_SERVER_H
+#endif //FTP_TCP_SERVER_H

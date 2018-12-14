@@ -1,5 +1,5 @@
-#ifndef SIMPLEFTPONUDP_SOCKETREADER_H
-#define SIMPLEFTPONUDP_SOCKETREADER_H
+#ifndef FTP_UDP_SOCKET_IO_H
+#define FTP_UDP_SOCKET_IO_H
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -43,4 +43,4 @@ private:
 };
 
 
-#endif //SIMPLEFTPONUDP_SOCKETREADER_H
+#endif //FTP_UDP_SOCKET_IO_H

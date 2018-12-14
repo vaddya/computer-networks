@@ -1,5 +1,5 @@
-#ifndef SIMPLEFTPONTCP_SOCKETREADER_H
-#define SIMPLEFTPONTCP_SOCKETREADER_H
+#ifndef FTP_TCP_SOCKET_IO_H
+#define FTP_TCP_SOCKET_IO_H
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -56,4 +56,4 @@ private:
     char *buffer;
 };
 
-#endif //SIMPLEFTPONTCP_SOCKETREADER_H
+#endif //FTP_TCP_SOCKET_IO_H

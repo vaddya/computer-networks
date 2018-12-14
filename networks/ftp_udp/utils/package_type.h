@@ -1,5 +1,5 @@
-#ifndef SIMPLEFTPONUDP_PACKAGETYPE_H
-#define SIMPLEFTPONUDP_PACKAGETYPE_H
+#ifndef FTP_UDP_PACKAGE_TYPE_H
+#define FTP_UDP_PACKAGE_TYPE_H
 
 #include <string>
 
@@ -12,4 +12,4 @@ enum PackageType : unsigned char {
 
 std::string type2string(PackageType type);
 
-#endif //SIMPLEFTPONUDP_PACKAGETYPE_H
+#endif //FTP_UDP_PACKAGE_TYPE_H

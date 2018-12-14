@@ -1,5 +1,5 @@
-#ifndef SIMPLEFTPONUDP_FTPSERVER_H
-#define SIMPLEFTPONUDP_FTPSERVER_H
+#ifndef FTP_UDP_FPT_SERVER_UDP_H
+#define FTP_UDP_FPT_SERVER_UDP_H
 
 #include <pthread.h>
 #include <unistd.h>
@@ -47,4 +47,4 @@ private:
     const Package *req;
 };
 
-#endif //SIMPLEFTPONUDP_FTPSERVER_H
+#endif //FTP_UDP_FPT_SERVER_UDP_H

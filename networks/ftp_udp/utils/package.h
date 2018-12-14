@@ -1,5 +1,5 @@
-#ifndef SIMPLEFTPONUDP_PACKAGE_H
-#define SIMPLEFTPONUDP_PACKAGE_H
+#ifndef FTP_UDP_PACKAGE_H
+#define FTP_UDP_PACKAGE_H
 
 #include <cstring>
 #include <cassert>
@@ -66,4 +66,4 @@ private:
     size_t data_size;
 };
 
-#endif //SIMPLEFTPONUDP_PACKAGE_H
+#endif //FTP_UDP_PACKAGE_H

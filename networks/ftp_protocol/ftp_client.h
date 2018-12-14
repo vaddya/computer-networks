@@ -1,5 +1,5 @@
-#ifndef NETWORKS_I_FTP_CLIENT_H
-#define NETWORKS_I_FTP_CLIENT_H
+#ifndef FTP_PROTOCOL_FTP_CLIENT_H
+#define FTP_PROTOCOL_FTP_CLIENT_H
 
 #include "ftp_entity.h"
 
@@ -52,4 +52,4 @@ public:
 
 };
 
-#endif //NETWORKS_I_FTP_CLIENT_H
+#endif //FTP_PROTOCOL_FTP_CLIENT_H

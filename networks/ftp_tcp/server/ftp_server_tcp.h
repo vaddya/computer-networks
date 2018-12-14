@@ -1,5 +1,5 @@
-#ifndef SIMPLEFTPONTCP_SERVER_H
-#define SIMPLEFTPONTCP_SERVER_H
+#ifndef FTP_TCP_FTP_SERVER_TCP_H
+#define FTP_TCP_FTP_SERVER_TCP_H
 
 #include <pthread.h>
 #include <unistd.h>
@@ -50,4 +50,4 @@ private:
 };
 
 
-#endif //SIMPLEFTPONTCP_SERVER_H
+#endif //FTP_TCP_FTP_SERVER_TCP_H

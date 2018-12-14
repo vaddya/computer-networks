@@ -20,7 +20,7 @@ ssize_t SocketIO::sendTo(sockaddr_in peer, Package req) {
     while (retry > 0) {
         std::cout << "Sending package " << req.toString() << std::endl;
         auto ns = sendto(this->s, out_buffer, size, 0, (sockaddr *) &peer, sizeof peer);
-//        if (req.getType() == PackageType::REQUEST && req.getRequest() == Request::PWD) { // oops
+//        if (req.getType() == PackageType::REQUEST && req.getRequest() == Request::PWD) { // oops: duplicate package
 //            ns = sendto(this->s, out_buffer, size, 0, (sockaddr *) &peer, sizeof peer);
 //        }
         retry--;
@@ -117,7 +117,7 @@ Package SocketIO::receiveFrom(sockaddr_in peer) {
 }
 
 size_t SocketIO::receiveFile(sockaddr_in peer, size_t counter, std::ofstream &file) {
-//    bool passed = false; // oops
+//    bool passed = false; // oops: drop package once
     while (true) {
         Package resp = receiveFrom(peer);
         counter += 1;

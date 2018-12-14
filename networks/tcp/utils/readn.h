@@ -1,5 +1,5 @@
-#ifndef SIMPLECLIENTSERVER_READN_H
-#define SIMPLECLIENTSERVER_READN_H
+#ifndef TCP_READN_H
+#define TCP_READN_H
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -10,4 +10,4 @@
  */
 int readn(int s, char *buf, int n);
 
-#endif //SIMPLECLIENTSERVER_READN_H
+#endif //TCP_READN_H

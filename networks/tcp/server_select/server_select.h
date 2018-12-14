@@ -1,5 +1,5 @@
-#ifndef SIMPLECLIENTSERVER_SERVER_SELECT_H
-#define SIMPLECLIENTSERVER_SERVER_SELECT_H
+#ifndef TCP_SERVER_SELECT_H
+#define TCP_SERVER_SELECT_H
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -16,4 +16,4 @@ const int PORT = 7000;
 
 const int BUFFER_SIZE = 10;
 
-#endif //SIMPLECLIENTSERVER_SERVER_SELECT_H
+#endif //TCP_SERVER_SELECT_H

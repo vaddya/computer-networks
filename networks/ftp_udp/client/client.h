@@ -1,5 +1,5 @@
-#ifndef SIMPLEFTPONUDP_FTP_CLIENT_H
-#define SIMPLEFTPONUDP_FTP_CLIENT_H
+#ifndef FTP_UDP_CLIENT_H
+#define FTP_UDP_CLIENT_H
 
 #include <iostream>
 #include <sys/types.h>
@@ -23,4 +23,4 @@ Supported commands:
  - exit
 )";
 
-#endif //SIMPLEFTPONUDP_FTP_CLIENT_H
+#endif //FTP_UDP_CLIENT_H

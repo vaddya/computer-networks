@@ -1,5 +1,5 @@
-#ifndef SIMPLECLIENTSERVER_SERVER_H
-#define SIMPLECLIENTSERVER_SERVER_H
+#ifndef TCP_SERVER_H
+#define TCP_SERVER_H
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -48,4 +48,4 @@ void *clientThread(void *data);
  */
 void *acceptThread(void *data);
 
-#endif //SIMPLECLIENTSERVER_SERVER_H
+#endif //TCP_SERVER_H

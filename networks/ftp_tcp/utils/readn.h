@@ -1,5 +1,5 @@
-#ifndef SIMPLEFTPONTCP_READN_H
-#define SIMPLEFTPONTCP_READN_H
+#ifndef FTP_TCP_READN_H
+#define FTP_TCP_READN_H
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -10,4 +10,4 @@
  */
 ssize_t readn(int s, char *buf, size_t n);
 
-#endif //SIMPLEFTPONTCP_READN_H
+#endif //FTP_TCP_READN_H

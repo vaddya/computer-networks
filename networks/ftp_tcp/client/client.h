@@ -1,5 +1,5 @@
-#ifndef SIMPLEFTPONTCP_FTP_CLIENT_H
-#define SIMPLEFTPONTCP_FTP_CLIENT_H
+#ifndef FTP_TCP_CLIENT_H
+#define FTP_TCP_CLIENT_H
 
 const int PORT = 7000;
 
@@ -23,4 +23,4 @@ Supported commands:
 #include <unistd.h>
 #include "ftp_client_tcp.h"
 
-#endif //SIMPLEFTPONTCP_FTP_CLIENT_H
+#endif //FTP_TCP_CLIENT_H
