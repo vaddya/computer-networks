@@ -1,0 +1,16 @@
+/home/vaddya/Git/computer-networks/networks/cmake-build-debug/ftp_udp/server/ftp_udp_server
+Client joined: 127.0.0.1:56533
+Received package [#0, request, connect, 0 bytes] from 127.0.0.1:56533
+Sending package [#1, ack for 0, 8 bytes]
+Sending package [#2, response, ok, 0 bytes]
+Received package [#3, ack for 2, 8 bytes] from 127.0.0.1:56533
+Got the right ack: 2
+Received package [#4, request, pwd, 0 bytes] from 127.0.0.1:56533
+Sending package [#5, ack for 4, 8 bytes]
+Sending package [#6, response, ok, 24 bytes]
+Received package [#4, request, pwd, 0 bytes] from 127.0.0.1:56533
+Sending package [#5, ack for 4, 8 bytes]
+Sending package [#6, response, ok, 24 bytes]
+Got too old package, ack: 4 instead of 7
+Received package [#7, ack for 6, 8 bytes] from 127.0.0.1:56533
+Got the right ack: 6

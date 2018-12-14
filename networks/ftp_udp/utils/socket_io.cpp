@@ -20,6 +20,9 @@ ssize_t SocketIO::sendTo(sockaddr_in peer, Package req) {
     while (retry > 0) {
         std::cout << "Sending package " << req.toString() << std::endl;
         auto ns = sendto(this->s, out_buffer, size, 0, (sockaddr *) &peer, sizeof peer);
+//        if (req.getType() == PackageType::REQUEST && req.getRequest() == Request::PWD) { // oops
+//            ns = sendto(this->s, out_buffer, size, 0, (sockaddr *) &peer, sizeof peer);
+//        }
         retry--;
         if (ns < 0) {
             throw std::runtime_error("Cannot send in socket: " + std::to_string(s));
@@ -114,9 +117,16 @@ Package SocketIO::receiveFrom(sockaddr_in peer) {
 }
 
 size_t SocketIO::receiveFile(sockaddr_in peer, size_t counter, std::ofstream &file) {
+//    bool passed = false; // oops
     while (true) {
         Package resp = receiveFrom(peer);
         counter += 1;
+//        if (counter == 9 && !passed) {
+//            passed = true;
+//            counter -=1 ;
+//            std::cout << "not sending ack" << std::endl;
+//            continue;
+//        }
         sendTo(peer, Package::ack(counter, resp.getCounter()));
         counter += 1;
         file.write(resp.getData(), resp.getDataSize());

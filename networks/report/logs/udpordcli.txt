@@ -1,0 +1,15 @@
+/home/vaddya/Git/computer-networks/networks/cmake-build-debug/ftp_udp/client/ftp_udp_client
+Sending package [#0, request, connect, 0 bytes]
+Received package [#1, ack for 0, 8 bytes] from 127.0.0.1:7000
+Got the right ack: 0
+Received package [#2, response, ok, 0 bytes] from 127.0.0.1:7000
+Sending package [#3, ack for 2, 8 bytes]
+connection done
+$ pwd
+Sending package [#104, request, pwd, 0 bytes]
+Sending package [#104, request, pwd, 0 bytes]
+Sending package [#104, request, pwd, 0 bytes]
+Sending package [#104, request, pwd, 0 bytes]
+Sending package [#104, request, pwd, 0 bytes]
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  Cannot send request: [#104, request, pwd, 0 bytes]

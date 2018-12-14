@@ -1,0 +1,10 @@
+/home/vaddya/Git/computer-networks/networks/cmake-build-debug/ftp_tcp/server/ftp_tcp_server
+Joined client with socket 4
+Got request <pwd> from socket 4
+Got request <ls> from socket 4
+Got request <put> from socket 4
+Got request <ls> from socket 4
+Got request <get> from socket 4
+Got request <ls> from socket 4
+Got request <cd> from socket 4
+Got request <ls> from socket 4

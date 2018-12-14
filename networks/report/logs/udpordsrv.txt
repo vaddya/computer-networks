@@ -1,0 +1,9 @@
+/home/vaddya/Git/computer-networks/networks/cmake-build-debug/ftp_udp/server/ftp_udp_server
+Client joined: 127.0.0.1:49281
+Received package [#0, request, connect, 0 bytes] from 127.0.0.1:49281
+Sending package [#1, ack for 0, 8 bytes]
+Sending package [#2, response, ok, 0 bytes]
+Received package [#3, ack for 2, 8 bytes] from 127.0.0.1:49281
+Got the right ack: 2
+Received package [#104, request, pwd, 0 bytes] from 127.0.0.1:49281
+Wrong package indexes: 104 instead of 4

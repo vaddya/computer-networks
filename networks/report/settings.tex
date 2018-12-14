@@ -21,7 +21,8 @@
 \usepackage{color}
 \usepackage{enumitem}
 \usepackage{cmap}
-\usepackage{underscore}
+%\usepackage{underscore}
+\usepackage{listingsutf8}
 
 \definecolor{green}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
@@ -31,13 +32,13 @@
 
 \lstset{
 	language={C++},
-	inputpath={../generator/src/main/java/com/vaddya/hotelbooking},
+	inputpath={},
 	backgroundcolor=\color{white},
 	commentstyle=\color{green},
 	keywordstyle=\color{blue},
 	numberstyle=\scriptsize\color{gray},
 	stringstyle=\color{purple},
-	basicstyle=\ttfamily\small,
+	basicstyle=\ttfamily\scriptsize,
 	breakatwhitespace=false,
 	breaklines=true,
 	captionpos=b,
@@ -48,10 +49,12 @@
 	showstringspaces=false,
 	showtabs=false,
 	tabsize=4,
-	texcl=true,
-	extendedchars=false,
+	texcl=false,
+	extendedchars=true,
 	frame=single,
-	morekeywords={IF, BIGSERIAL, SERIAL, TEXT, BIGINT, MONEY, BOOLEAN, REFERENCES}
+	morekeywords={override},
+	columns=fullflexible,
+	inputencoding=utf8/cp1251
 }
 
 \renewcommand{\le}{\ensuremath{\leqslant}}
@@ -82,5 +85,5 @@
 \setlength\parindent{5ex}
 \titlelabel{\thetitle.\quad}
 
-\setitemize{topsep=0.3em, itemsep=0em}
-\setenumerate{topsep=0.3em, itemsep=0em}
+\setitemize{topsep=0em, itemsep=0em}
+\setenumerate{topsep=0em, itemsep=0em}

@@ -1,0 +1,20 @@
+/home/vaddya/Git/computer-networks/networks/cmake-build-debug/ftp_tcp/client/ftp_tcp_client
+$ pwd
+/home/vaddya/FTP/Server/
+$ ls
+[-] example1.zip
+[-] example2.zip
+[-] 123
+[d] Fold
+put привет-мир
+$ ls
+[-] example1.zip
+[-] привет-мир
+[-] example2.zip
+[-] 123
+[d] Fold
+$ get 123
+$ cd Fold
+$ ls
+[-] error.png
+[-] goodbye
