@@ -1,0 +1,9 @@
+[vaddya@torvalds Downloads]$ gpg --decrypt encrypted.txt 
+gpg: BLOWFISH encrypted data
+gpg: encrypted with 1 passphrase
+gpg: decryption failed: Bad session key
+[vaddya@torvalds Downloads]$ gpg --decrypt encrypted.txt 
+gpg: BLOWFISH encrypted data
+gpg: encrypted with 1 passphrase
+Very secret message is about to be encrypted using symmetric encryption!
+

@@ -1,0 +1,12 @@
+vaddya@turing:~/Shared$ cat message.txt 
+Very secret message is about to be encrypted using symmetric encryption!
+vaddya@turing:~/Shared$ gpg --output encrypted.txt --armor --symmetric --cipher-algo BLOWFISH message.txt 
+vaddya@turing:~/Shared$ cat encrypted.txt 
+-----BEGIN PGP MESSAGE-----
+
+jA0EBAMCqC1LDrDhd4D/0nYBVdOSsELBzzuvBM6fJT8K4DzRGsWln4WFDyDpr03G
+ZZOD1oCbWvx7ZaM8pO6apSz5S4F0HfJ+vHjRC8JlPLZGYdhE4glea1hzx+5p73nq
+vDJp+kSyDocS6RJa4Zokb0h+C9qeIhosXeK4I7NuoE8hpbx4E6ps
+=bRtX
+-----END PGP MESSAGE-----
+
