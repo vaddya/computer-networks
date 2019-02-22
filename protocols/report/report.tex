@@ -1,0 +1,113 @@
+\include{settings}
+
+\begin{document}
+
+\include{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Техническое задание}
+
+По каждому протоколу привести:
+
+\begin{itemize}
+	\item основные сведения о протоколе,
+	\item описание основных команд,
+	\item область применения и ограничения протокола,
+	\item распечатку вывода консоли при выполнении задания,
+	\item в выводах отразить, в чем заключается польза от выполнения данной работы.
+\end{itemize}
+
+\section{Прикладные протоколы}
+
+\subsection{SMTP}
+
+\subsubsection{Основные сведения о протоколе}
+
+\subsubsection{Задание}
+
+При помощи утилиты \code{openssl s_client} отправить email через SMTP-сервер Yandex.
+
+\subsubsection{Выполнение задания}\ 
+
+\lstinputlisting[caption=\code{smtp.log}]{smtp.log}
+
+\subsection{POP3}
+
+\subsubsection{Основные сведения о протоколе}
+
+\subsubsection{Задание}
+
+При помощи утилиты \code{openssl s_client} прочитать email при помощи POP3-сервера Yandex.
+
+\subsubsection{Выполнение задания}\ 
+
+\lstinputlisting[caption=\code{pop3.log}]{pop3.log}
+
+\subsection{IMAP}
+
+\subsubsection{Основные сведения о протоколе}
+
+\subsubsection{Задание}
+
+При помощи утилиты \code{openssl s_client} прочитать email при помощи IMAP-сервера Yandex.
+
+\subsubsection{Выполнение задания}\ 
+
+\lstinputlisting[caption=\code{imap.log}]{imap.log}
+
+\subsection{HTTP}
+
+\subsubsection{Основные сведения о протоколе}
+
+\subsubsection{Задание}
+
+При помощи утилиты \code{openssl s_client} прочитать главную страницу сайта \code{yandex.ru}.
+
+\subsubsection{Выполнение задания}\ 
+
+\lstinputlisting[caption=\code{http.log}]{http.log}
+
+\subsection{FTP}
+
+\subsubsection{Основные сведения о протоколе}
+
+\subsubsection{Задание} 
+
+\noindent При помощи утилиты \code{telnet} загрузить файл с FTP-сервера \code{ftp.sunet.se}.
+
+\subsubsection{Выполнение задания}\ 
+
+\lstinputlisting[caption=\code{ftp.log}]{ftp.log}
+
+\subsection{TFTP}
+
+\subsubsection{Основные сведения о протоколе}
+
+\subsubsection{Задание}
+
+При помощи утилиты \code{netcat} выяснить имя файла, который запрашивает удаленный хост (при помощи утилиты \code{tftp}) у данного хоста.
+
+\subsubsection{Выполнение задания}\ 
+
+\lstinputlisting[caption=\code{tftp.log}]{tftp.log}
+
+\subsection{WebDAV}
+
+\subsubsection{Основные сведения о протоколе}
+
+\subsubsection{Задание}
+
+При помощи утилиты \code{curl} загрузить файл, создать директорию, выгрузить файл на сервис \code{disk.yandex.ru}.
+
+\subsubsection{Выполнение задания}\ 
+
+\lstinputlisting[caption=\code{webdav.log}]{webdav.log}
+
+\section{Выводы}
+
+Логи выполнения заданий и отчет размещены в Git репозитории:\\ 
+\url{https://github.com/vaddya/computer-networks}
+
+\end{document}
