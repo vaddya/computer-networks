@@ -1,0 +1,35 @@
+vaddya@mi:~$ openssl s_client -connect smtp.yandex.ru:465
+CONNECTED(00000005)
+${CERTIFICATE_CHECK}
+220 smtp4p.mail.yandex.net ESMTP (Want to use Yandex.Mail for your domain? Visit http://pdd.yandex.ru)
+EHLO yandex.ru
+250-smtp4p.mail.yandex.net
+250-8BITMIME
+250-PIPELINING
+250-SIZE 42991616
+250-AUTH LOGIN PLAIN XOAUTH2
+250-DSN
+250 ENHANCEDSTATUSCODES
+AUTH LOGIN
+334 VXNlcm5hbWU6
+dmFkMmZvdXJAeWFuZGV4LnJ1
+334 UGFzc3dvcmQ6
+${PASSWORD_BASE64}
+235 2.7.0 Authentication successful.
+MAIL FROM:<vad2four@yandex.ru>
+250 2.1.0 <vad2four@yandex.ru> ok
+RCPT TO:<vad2four@yandex.ru>
+250 2.1.5 <vad2four@yandex.ru> recipient ok
+DATA
+354 Enter mail, end with "." on a line by itself
+From: "Linux console" <linux@console>
+To: Vadim <vad2four@yandex.ru>
+Subject: Test message
+
+Test message.
+Good bye!
+.
+250 2.0.0 Ok: queued on smtp4p.mail.yandex.net as 1550865339-rlBgHzNyu9-t0mWkgS0
+QUIT
+DONE
+

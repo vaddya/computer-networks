@@ -1,0 +1,12 @@
+vaddya@mi:~$ sudo nc -v -lu 69
+Listening on [0.0.0.0] (family 0, port 69)
+Connection from localhost 50483 received!
+/home/vaddya/testnetascii
+/home/vaddya/testoctet
+
+vaddya@mi:~$ tftp localhost
+tftp> get /home/vaddya/test
+tftp> binary
+tftp> get /home/vaddya/test
+tftp> quit
+

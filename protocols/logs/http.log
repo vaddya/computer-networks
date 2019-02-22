@@ -1,0 +1,24 @@
+vaddya@mi:~$ openssl s_client -connect yandex.ru:443
+CONNECTED(00000005)
+${CERTIFICATE_CHECK}
+GET / HTTP/1.1
+Host: yandex.ru
+
+HTTP/1.1 200 Ok
+Date: Fri, 22 Feb 2019 19:58:39 GMT
+Content-Type: text/html; charset=UTF-8
+Cache-Control: no-cache,no-store,max-age=0,must-revalidate
+Expires: Fri, 22 Feb 2019 19:58:40 GMT
+Last-Modified: Fri, 22 Feb 2019 19:58:40 GMT
+Content-Security-Policy: connect-src 'self' ${YANDEX_DOMAINS}
+P3P: policyref="/w3c/p3p.xml", CP="NON DSP ADM DEV PSD IVDo OUR IND STP PHY PRE NAV UNI"
+Set-Cookie: yp=1553457520.ygu.1; Expires=Mon, 19-Feb-2029 19:58:39 GMT; Domain=.ya.ru; Path=/
+Set-Cookie: mda=0; Expires=Sat, 22-Jun-2019 19:58:39 GMT; Domain=.ya.ru; Path=/
+Set-Cookie: yandex_gid=2; Expires=Sun, 24-Mar-2019 19:58:39 GMT; Domain=.ya.ru; Path=/
+Set-Cookie: yandexuid=2709066601550865519; Expires=Mon, 19-Feb-2029 19:58:39 GMT; Domain=.ya.ru; Path=/
+X-Frame-Options: DENY
+Set-Cookie: i=1qS76RpxPSVoE5RtzTFDH3Au1dpmQ9ZSD/xGWDNKwyshPwqDt7U1C23jTMqzmCmiLuK2gGW2p5CH26PtmgmqCx0acPo=; Expires=Mon, 19-Feb-2029 19:58:39 GMT; Domain=.ya.ru; Path=/; Secure; HttpOnly
+X-Content-Type-Options: nosniff
+Content-Length: 13436
+
+<!DOCTYPE html><html class="i-ua_js_no i-ua_css_standart i-ua_browser_ i-ua_browser_desktop i-ua_platform_other" lang="ru">${HTML}</html>  

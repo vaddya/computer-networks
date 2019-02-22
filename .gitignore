@@ -7,6 +7,6 @@ cmake-build-debug/
 *.lol
 *.out
 *.gz
-*.log
+report.log
 *.dvi
 *.pdf

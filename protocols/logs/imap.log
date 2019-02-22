@@ -1,0 +1,57 @@
+vaddya@mi:~$ openssl s_client -connect imap.yandex.ru:993 -crlf
+CONNECTED(00000005)
+${CERTIFICATE_CHECK}
+* OK Yandex IMAP4rev1 at imap55p.mail.yandex.net:993 ready to talk with ::ffff:5.3.186.216:48636, 2019-Feb-22 22:37:08, 8bcAMqIpkmI1
+a000 login vad2four@yandex.ru ${PASSWORD}
+* CAPABILITY IMAP4rev1 CHILDREN UNSELECT LITERAL+ NAMESPACE XLIST BINARY UIDPLUS ENABLE ID IDLE MOVE
+a000 OK login Completed.
+a001 select inbox
+* FLAGS (\Answered \Seen \Draft \Deleted $Forwarded)
+* 204 EXISTS
+* 0 RECENT
+* OK [PERMANENTFLAGS (\Answered \Seen \Draft \Flagged \Deleted $Forwarded \*)] Limited
+* OK [UIDNEXT 350] Ok
+* OK [UIDVALIDITY 1458128615] Ok
+a001 OK [READ-WRITE] select Completed.
+a002 fetch 204 (body[header])
+* 202 FETCH (BODY[HEADER] {1673}
+Received: from mxback15o.mail.yandex.net ([127.0.0.1])
+	by mxback15o.mail.yandex.net with LMTP id i1bJrQHi
+	for <vad2four@yandex.ru>; Wed, 13 Feb 2019 12:51:26 +0300
+Received: from mxback15o.mail.yandex.net (localhost.localdomain [127.0.0.1])
+	by mxback15o.mail.yandex.net (Yandex) with ESMTP id F20516C11CA
+	for <vad2four@yandex.ru>; Wed, 13 Feb 2019 12:51:25 +0300 (MSK)
+X-Yandex-Internal: 1
+Received: from smtp3o.mail.yandex.net (smtp3o.mail.yandex.net [2a02:6b8:0:1a2d::27])
+	by mxback15o.mail.yandex.net (nwsmtp/Yandex) with ESMTP id XGy1hsvMJt-pPs8Dqtq;
+	Wed, 13 Feb 2019 12:51:25 +0300
+X-Yandex-Front: mxback15o.mail.yandex.net
+X-Yandex-TimeMark: 1550051485
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.ru; s=mail; t=1550051485;
+	bh=46j2yO20/Rk8k+W/fuNsIVS9EQ5r8v+V/A2VdAgrzlg=;
+	h=Message-Id:Date:From:To:Subject;
+	b=lJxrMfjnVcVyqjDFyJLBFqrhgOzpZBHRKUOYuZrGhJBjSD4judxG5tqFI2YQyIsSJ
+	 kLZcS5MfcLHzrXAjiVY8a8Mbw3xngkpF0hdwHrw9P52YxnwSyoY0wk6xIZlo9rGqAT
+	 yQnKVUN4N4/auB8kSe3+Da14AlsOtHNmCdNvqXvE=
+Authentication-Results: mxback15o.mail.yandex.net; dkim=pass header.i=@yandex.ru
+Received: by smtp3o.mail.yandex.net (nwsmtp/Yandex) with ESMTPSA id WPtlgDdsOg-noVWGsBT;
+	Wed, 13 Feb 2019 12:50:08 +0300
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(Client certificate not present)
+X-Yandex-Front: smtp3o.mail.yandex.net
+X-Yandex-TimeMark: 1550051408
+Message-Id: <20190213125125.noVWGsBT@smtp3o.mail.yandex.net>
+Date: Wed, 13 Feb 2019 12:51:25 +0300
+X-Yandex-Spam: 1
+From: "Linux console" <linux@console>
+To: Vadim <vad2four@yandex.ru>
+Subject: Test message
+Return-Path: vad2four@yandex.ru
+
+)
+a002 OK fetch Completed.
+a003 logout
+* BYE IMAP4rev1 Server logging out
+a003 OK LOGOUT completed
+read:errno=0
+

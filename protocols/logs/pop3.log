@@ -1,0 +1,57 @@
+vaddya@mi:~$ openssl s_client -connect pop.yandex.ru:995
+CONNECTED(00000005)
+${CERTIFICATE_CHECK}
++OK POP Ya! na@4-2994004ff8c3 EocsjH3XHCg1
+USER vad2four@yandex.ru
++OK password, please.
+PASS ${PASSWORD}
++OK 204 11783572
+RETR 1
+RENEGOTIATING
+depth=2 C = PL, O = Unizeto Technologies S.A., OU = Certum Certification Authority, CN = Certum Trusted Network CA
+verify return:1
+depth=1 C = RU, O = Yandex LLC, OU = Yandex Certification Authority, CN = Yandex CA
+verify return:1
+depth=0 C = RU, O = Yandex LLC, OU = ITO, L = Moscow, ST = Russian Federation, CN = pop.yandex.ru
+verify return:1
++OK 1727 octets.
+X-Yandex-FolderName: Inbox
+Received: from mxback15o.mail.yandex.net ([127.0.0.1])
+	by mxback15o.mail.yandex.net with LMTP id i1bJrQHi
+	for <vad2four@yandex.ru>; Wed, 13 Feb 2019 12:51:26 +0300
+Received: from mxback15o.mail.yandex.net (localhost.localdomain [127.0.0.1])
+	by mxback15o.mail.yandex.net (Yandex) with ESMTP id F20516C11CA
+	for <vad2four@yandex.ru>; Wed, 13 Feb 2019 12:51:25 +0300 (MSK)
+X-Yandex-Internal: 1
+Received: from smtp3o.mail.yandex.net (smtp3o.mail.yandex.net [2a02:6b8:0:1a2d::27])
+	by mxback15o.mail.yandex.net (nwsmtp/Yandex) with ESMTP id XGy1hsvMJt-pPs8Dqtq;
+	Wed, 13 Feb 2019 12:51:25 +0300
+X-Yandex-Front: mxback15o.mail.yandex.net
+X-Yandex-TimeMark: 1550051485
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.ru; s=mail; t=1550051485;
+	bh=46j2yO20/Rk8k+W/fuNsIVS9EQ5r8v+V/A2VdAgrzlg=;
+	h=Message-Id:Date:From:To:Subject;
+	b=lJxrMfjnVcVyqjDFyJLBFqrhgOzpZBHRKUOYuZrGhJBjSD4judxG5tqFI2YQyIsSJ
+	 kLZcS5MfcLHzrXAjiVY8a8Mbw3xngkpF0hdwHrw9P52YxnwSyoY0wk6xIZlo9rGqAT
+	 yQnKVUN4N4/auB8kSe3+Da14AlsOtHNmCdNvqXvE=
+Authentication-Results: mxback15o.mail.yandex.net; dkim=pass header.i=@yandex.ru
+Received: by smtp3o.mail.yandex.net (nwsmtp/Yandex) with ESMTPSA id WPtlgDdsOg-noVWGsBT;
+	Wed, 13 Feb 2019 12:50:08 +0300
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(Client certificate not present)
+X-Yandex-Front: smtp3o.mail.yandex.net
+X-Yandex-TimeMark: 1550051408
+Message-Id: <20190213125125.noVWGsBT@smtp3o.mail.yandex.net>
+Date: Wed, 13 Feb 2019 12:51:25 +0300
+X-Yandex-Spam: 1
+From: "Linux console" <linux@console>
+To: Vadim <vad2four@yandex.ru>
+Subject: Test message
+Return-Path: vad2four@yandex.ru
+
+Test message.
+Good bye!
+.
+QUIT
+DONE
+

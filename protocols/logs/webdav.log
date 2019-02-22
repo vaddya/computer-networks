@@ -1,0 +1,11 @@
+vaddya@mi:~$ curl -X MKCOL --user 'vad2four:${PASSWORD}' 'https://webdav.yandex.ru/test'
+vaddya@mi:~$ echo "Hello form Linux" > hello.txt
+vaddya@mi:~$ curl -T hello.txt --user 'vad2four:${PASSWORD}' 'https://webdav.yandex.ru/test/hello.txt'
+vaddya@mi:~$ rm hello.txt 
+vaddya@mi:~$ curl --user 'vad2four:${PASSWORD}' 'https://webdav.yandex.ru/test/hello.txt' > hello.txt
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100    17  100    17    0     0    101      0 --:--:-- --:--:-- --:--:--   101
+vaddya@mi:~$ cat hello.txt 
+Hello form Linux
+

@@ -1,0 +1,25 @@
+vaddya@mi:~$ telnet ftp.sunet.se 21
+Trying 194.71.11.165...
+Connected to sunet.ftp.acc.umu.se.
+Escape character is '^]'.
+220 Please use http://ftp.acc.umu.se/ whenever possible.
+USER anonymous
+331 Please specify the password.
+PASS anonymous
+230 Login successful.
+PASV
+227 Entering Passive Mode (194,71,11,165,63,9).
+RETR favicon.ico
+150 Opening BINARY mode data connection for favicon.ico (15086 bytes).
+226 Transfer complete.
+QUIT
+221 Goodbye.
+Connection closed by foreign host.
+
+vaddya@mi:~$ telnet 194.71.11.165 16137
+Trying 194.71.11.165...
+Connected to sunet.ftp.acc.umu.se.
+Escape character is '^]'.
+${BINARY_ENCODED_FAVICON}
+Connection closed by foreign host.
+
