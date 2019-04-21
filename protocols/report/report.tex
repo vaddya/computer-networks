@@ -25,11 +25,23 @@
 
 \subsubsection{Основные сведения о протоколе}
 
+SMTP (Simple Mail Transfer Protocol) -- это широко используемый сетевой протокол, предназначенный для передачи электронной почты в сетях TCP/IP.
+
+Основные команды:
+
+\begin{itemize}
+	\item \code{EHLO <server name>}. Диалог клиента и сервера, как правило, начинается с приветствия. В RFC 821 в качестве приветствия предлагалась команда \code{HELO}. Однако с введением расширений \code{ESMTP}, эта команда была заменена на \code{EHLO}.
+	\item \code{MAIL FROM <address>}. С помощью этой команды серверу сообщается адрес отправителя письма. На этот адрес письмо должно вернуться в случае невозможности доставки.
+	\item \code{RCPT TO <address>}. Доставка сообщения возможна, только если указан хотя бы один доступный адрес получателя. Команда \code{RCPT} принимает в качестве аргумента только один адрес. Если нужно послать письмо большему числу адресатов, то команду \code{RCPT} следует повторять для каждого.
+	\item \code{DATA <data>}. C помощью этой команды серверу передается текст сообщения, состоящий из заголовка и отделенного от него пустой строкой тела сообщения.
+	\item \code{QUIT}. Командой QUIT клиент заканчивает диалог с сервером.
+\end{itemize}
+
 \subsubsection{Задание}
 
 При помощи утилиты \code{openssl s_client} отправить email через SMTP-сервер Yandex.
 
-\subsubsection{Выполнение задания}\ 
+\subsubsection{Выполнение задания}
 
 \lstinputlisting[caption=\code{smtp.log}]{smtp.log}
 
@@ -37,11 +49,23 @@
 
 \subsubsection{Основные сведения о протоколе}
 
+POP3 (Post Office Protocol Version 3) -- стандартный интернет-протокол прикладного уровня, используемый клиентами электронной почты для получения почты с удалённого сервера по TCP-соединению.
+
+Основные команды:
+
+\begin{itemize}
+	\item \code{USER <username>}. Передаёт серверу имя пользователя.
+	\item \code{PASS <password>}. Передаёт серверу пароль почтового ящика.
+	\item \code{RETR <number>}. Сервер передаёт сообщение с указанным номером.
+	\item \code{TOP <number> <lines>}. Сервер возвращает заголовки указанного сообщения, пустую строку и указанное количество первых строк тела сообщения.
+	\item \code{QUIT}. Закрытие соединения с сервером. 
+\end{itemize}
+
 \subsubsection{Задание}
 
 При помощи утилиты \code{openssl s_client} прочитать email при помощи POP3-сервера Yandex.
 
-\subsubsection{Выполнение задания}\ 
+\subsubsection{Выполнение задания}
 
 \lstinputlisting[caption=\code{pop3.log}]{pop3.log}
 
@@ -49,11 +73,28 @@
 
 \subsubsection{Основные сведения о протоколе}
 
+IMAP (Internet Message Access Protocol) -- протокол прикладного уровня для доступа к электронной почте. Базируется на транспортном протоколе TCP и использует порт 143, а IMAPS (IMAP поверх SSL) — порт 993. IMAP работает только с сообщениями и не требует каких-либо пакетов со специальными заголовками.
+
+Основные команды:
+
+\begin{itemize}
+	\item \code{CAPABILITY}. Запрос списка возможностей
+	\item \code{LOGOUT}. Завершает сеанс для текущего идентификатора пользователя.
+	\item \code{LOGIN <username> <password>}. Позволяет клиенту при регистрации на сервере IMAP использовать идентификатор пользователя и пароль в обычном текстовом виде.
+	\item \code{AUTHENTICATE <method>}. Позволяет клиенту использовать при регистрации на сервере IMAP альтернативные методы проверки подлинности. 
+	\item \code{SELECT <mailbox>}. Открывает доступ к указанному почтовому ящику.
+	\item \code{EXAMINE <mailbox>}. Аналогично команде SELECT , но почтовый ящик открывается только для чтения.
+	\item \code{LIST <path> <mailbox>}. Возвращает список каталогов и почтовых ящиков, соответствующих указанным аргументам.
+	\item \code{STATUS <mailbox>}. Выдача состояния ящика
+	\item \code{APPEND <mailbox> [<flags>]}. Добавляет сообщение в конец указанного почтового ящика.
+	\item и другие.
+\end{itemize}
+
 \subsubsection{Задание}
 
 При помощи утилиты \code{openssl s_client} прочитать email при помощи IMAP-сервера Yandex.
 
-\subsubsection{Выполнение задания}\ 
+\subsubsection{Выполнение задания}
 
 \lstinputlisting[caption=\code{imap.log}]{imap.log}
 
@@ -61,11 +102,44 @@
 
 \subsubsection{Основные сведения о протоколе}
 
+HTTP (HyperText Transfer Protocol) -- протокол прикладного уровня передачи данных изначально -- в виде гипертекстовых документов в формате «HTML», в настоящий момент используется для передачи произвольных данных. 
+
+Формат HTTP-запроса:
+
+\begin{itemize}
+	\item \code{<Request-line>} -- строка запроса
+	\item \code{<General-header>} -- общий заголовок
+	\item \code{<Request-header>} -- заголовок запроса
+	\item \code{<Entity-header>} -- заголовок сообщения
+	\item \code{<Body>} -- тело запроса
+\end{itemize}
+
+Методы HTTP-запроса:
+
+\begin{itemize}
+	\item GET
+	\item POST
+	\item HEAD
+	\item PUT
+	\item DELETE
+	\item OPTIONS
+	\item UPDATE
+\end{itemize}
+
+\subsubsection{Коды ответов}
+\begin{itemize}
+	\item 1xx -- Информационные
+	\item 2xx -- ОК
+	\item 3xx -- Переадресация
+	\item 4xx -- Ошибка клиента
+	\item 5xx -- Ошибка сервера
+\end{itemize}
+
 \subsubsection{Задание}
 
 При помощи утилиты \code{openssl s_client} прочитать главную страницу сайта \code{yandex.ru}.
 
-\subsubsection{Выполнение задания}\ 
+\subsubsection{Выполнение задания}
 
 \lstinputlisting[caption=\code{http.log}]{http.log}
 
@@ -73,11 +147,49 @@
 
 \subsubsection{Основные сведения о протоколе}
 
+FTP (File Transfer Protocol) -- является широко используемым протоколом для обмена файлами по любой сети, поддерживающей протокол TCP/IP. FTP поддерживает два режима передачи.
+
+Активный режим:
+
+\begin{itemize}
+	\item Режим <<по умолчанию>>.
+	\item Сервер инициирует соединение данных.
+	\item Клиент открывает слушающий порт.
+	\item Номер TCP-порта сервера – 20.
+	\item Невозможно использовать с технологиями типа NAT, Proxy.
+	\item Обычно запрещён в межсетевых экранах.
+\end{itemize}
+
+Пассивный режим:
+
+\begin{itemize}
+	\item Клиент инициирует соединение данных.
+	\item Сервер информирует о параметрах канала данных.
+	\item Сервер открывает слушающий порт.
+	\item Поддерживается не всеми реализациями.
+\end{itemize}
+
+\subsubsection{Основные команды}
+\begin{itemize}
+	\item \code{USER <username>}. Имя пользователя для входа на сервер.
+	\item \code{PASS <password>}. Пароль.
+	\item \code{ABOR}. Прервать передачу файла.
+	\item \code{QUIT}. Отключиться.
+	\item \code{DELE <filename>}. Удалить файл.
+	\item \code{PWD}. Возвращает текущий каталог.
+	\item \code{PORT a1, a2, a3, a4, p1, p2}. Войти в активный режим, порт p1 * 256 + p2.
+	\item \code{PASV}. Войти в пассивный режим.
+	\item \code{RETR <filename>}. Скачать файл.
+	\item \code{STOR <filename>}. Загрузить файл.
+	\item \code{LIST [<path>]}. Получить список файлов каталога.
+	\item \code{NLST [<path>]}. Получить список имён файлов каталога.
+\end{itemize}
+
 \subsubsection{Задание} 
 
 \noindent При помощи утилиты \code{telnet} загрузить файл с FTP-сервера \code{ftp.sunet.se}.
 
-\subsubsection{Выполнение задания}\ 
+\subsubsection{Выполнение задания}
 
 \lstinputlisting[caption=\code{ftp.log}]{ftp.log}
 
@@ -85,11 +197,31 @@
 
 \subsubsection{Основные сведения о протоколе}
 
+TFTP (Trivial File Transfer Protocol) -- используется главным образом для первоначальной загрузки бездисковых рабочих станций. TFTP, в отличие от FTP, не содержит возможностей аутентификации (хотя возможна фильтрация по IP-адресу) и основан на транспортном протоколе UDP.
+
+Сначала в TFTP-пакете идет поле размером в 2 байта, определяющее тип пакета:
+
+\begin{itemize}
+	\item Read Request (RRQ, \#1) -- запрос на чтение файла.
+	\item Write Request (WRQ, \#2) -- запрос на запись файла.
+	\item Data (DATA, \#3) -- данные, передаваемые через TFTP.
+	\item Acknowledgment (ACK, \#4) -- подтверждение пакета.
+	\item Error (ERR, \#5) -- ошибка.
+	\item Option Acknowledgment (OACK, \#6) -- подтверждение опций.
+\end{itemize}
+
+В TFTP существует 2 режима передачи (режим Mail, определенный в IEN 133, признан устаревшим):
+
+\begin{itemize}
+	\item \code{netascii} -- файл перед передачей перекодируется в ASCII.
+	\item \code{octet} -- файл передается без изменений.
+\end{itemize}
+
 \subsubsection{Задание}
 
 При помощи утилиты \code{netcat} выяснить имя файла, который запрашивает удаленный хост (при помощи утилиты \code{tftp}) у данного хоста.
 
-\subsubsection{Выполнение задания}\ 
+\subsubsection{Выполнение задания}
 
 \lstinputlisting[caption=\code{tftp.log}]{tftp.log}
 
@@ -97,15 +229,38 @@
 
 \subsubsection{Основные сведения о протоколе}
 
+WebDAV (Web Distributed Authoring and Versioning), DAV — набор расширений и дополнений к протоколу HTTP, поддерживающих совместную работу пользователей над редактированием файлов и управление файлами на удаленных веб-серверах. Кроме того, DAV широко применяется в качестве протокола для доступа через Интернет и манипулирования содержимым систем документооборота.
+
+WebDAV расширяет HTTP следующими методами запроса:
+
+\begin{itemize}
+	\item \code{PROPFIND} -- получение свойств объекта на сервере в формате XML. Также можно получать структуру репозитория (дерево каталогов);
+	\item \code{PROPPATCH} -- изменение свойств за одну транзакцию;
+	\item \code{MKCOL} -- создать коллекцию объектов (каталог в случае доступа к файлам);
+	\item \code{COPY} -- копирование из одного URI в другой;
+	\item \code{MOVE} -- перемещение из одного URI в другой;
+	\item \code{LOCK} -- поставить блокировку на объекте. WebDAV поддерживает эксклюзивные и общие (shared) блокировки;
+	\item \code{UNLOCK} -- снять блокировку с ресурса.
+\end{itemize}
+
 \subsubsection{Задание}
 
 При помощи утилиты \code{curl} загрузить файл, создать директорию, выгрузить файл на сервис \code{disk.yandex.ru}.
 
-\subsubsection{Выполнение задания}\ 
+\subsubsection{Выполнение задания}
 
 \lstinputlisting[caption=\code{webdav.log}]{webdav.log}
 
 \section{Выводы}
+
+В процессе выполнения данной работы изучены протоколы и рассмотрено их применение на практике:
+
+\begin{itemize}
+	\item почтовые протокола (SMTP, POP3, IMAP);
+	\item протокол передачи файлов и объектов HTTP;
+	\item протоколы передачи файлов FTP и TFTP;
+	\item протокол WebDAV для совместной работы над файлами поверх протокола HTTP. 
+\end{itemize}
 
 Логи выполнения заданий и отчет размещены в Git репозитории:\\ 
 \url{https://github.com/vaddya/computer-networks}
